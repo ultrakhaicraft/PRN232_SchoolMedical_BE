@@ -17,4 +17,8 @@
     <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="9.0.5" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\SchoolMedical_DataAccess\SchoolMedical_DataAccess.csproj" />
+  </ItemGroup>
+
 </Project>

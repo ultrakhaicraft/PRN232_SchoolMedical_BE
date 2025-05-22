@@ -14,4 +14,8 @@
     <Folder Include="Controllers\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\SchoolMedical_BusinessLogic\SchoolMedical_BusinessLogic.csproj" />
+  </ItemGroup>
+
 </Project>
