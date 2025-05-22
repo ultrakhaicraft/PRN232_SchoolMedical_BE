@@ -4,6 +4,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using SchoolMedical_DataAccess.DTOModels;
 
 namespace SchoolMedical_BusinessLogic.Utility;
 
