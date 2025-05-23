@@ -1,11 +1,24 @@
+using PRN232_SchoolMedicalAPI;
+using SchoolMedical_DataAccess.DTOModels;
+using PRN232_SchoolMedicalAPI.Helpers;
+using SchoolMedical_BusinessLogic;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddInfrastructure(builder.Configuration);
+
+builder.Services.AddApplication(builder.Configuration);
+
+builder.Services.AddControllers(op =>
+{
+	op.Filters.Add(new ResultManipulator());
+});
+
+
+// Set the minimum level to Debug
+builder.Logging.SetMinimumLevel(LogLevel.Debug);
 
 var app = builder.Build();
 
