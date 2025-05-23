@@ -7,7 +7,16 @@ using System.Threading.Tasks;
 
 namespace SchoolMedical_DataAccess.DTOModels;
 
-public class JWTToken
+
+public class DBConnection
+{
+	public string? ConnectionString { get; set; } = string.Empty;
+}
+
+	/// <summary>
+	/// JWTToken is also used as login response.
+	/// </summary>
+	public class JWTToken
 {
 	public string? TokenString { get; set; }
 	public string? Id { get; set; }

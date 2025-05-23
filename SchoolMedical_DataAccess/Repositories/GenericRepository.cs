@@ -1,4 +1,6 @@
-﻿using SchoolMedical_DataAccess.Interfaces;
+﻿using Microsoft.EntityFrameworkCore;
+using SchoolMedical_DataAccess.Entities;
+using SchoolMedical_DataAccess.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,12 +10,12 @@ using System.Threading.Tasks;
 
 namespace SchoolMedical_DataAccess.Repositories;
 
-/*public class GenericRepository <T> : IGenericRepository<T> where T : class
+public class GenericRepository <T> : IGenericRepository<T> where T : class
 {
-	protected readonly PackpalDbContext _context;
+	protected readonly SchoolhealthdbContext _context;
 	protected readonly DbSet<T> _dbSet;
 
-	public GenericRepository(PackpalDbContext dbContext)
+	public GenericRepository(SchoolhealthdbContext dbContext)
 	{
 		_context = dbContext;
 		_dbSet = _context.Set<T>();
@@ -112,4 +114,4 @@ namespace SchoolMedical_DataAccess.Repositories;
 	}
 
 
-}*/
+}

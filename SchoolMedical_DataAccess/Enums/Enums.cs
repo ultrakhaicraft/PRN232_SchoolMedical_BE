@@ -8,13 +8,17 @@ namespace SchoolMedical_DataAccess.Enums;
 
 public enum AccountRole
 {
-	Student, Parent, SchoolNurse, Manager, Admin
+	Student, 
+	Parent, 
+	SchoolNurse, 
+	Manager, 
+	Admin
 }
 
 public enum IsAvailable
 {
-	Yes = 1,
-	No = 0
+	Yes,
+	No
 }
 
 
