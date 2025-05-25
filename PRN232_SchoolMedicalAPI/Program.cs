@@ -5,6 +5,7 @@ using SchoolMedical_BusinessLogic;
 
 var builder = WebApplication.CreateBuilder(args);
 
+
 // Add services to the container.
 
 builder.Services.AddInfrastructure(builder.Configuration);
@@ -21,6 +22,10 @@ builder.Services.AddControllers(op =>
 builder.Logging.SetMinimumLevel(LogLevel.Debug);
 
 var app = builder.Build();
+
+app.UseMiddleware<ErrorHandlerMiddleware>();
+app.UseMiddleware<ResponseHandlerMiddleware>();
+
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
