@@ -84,7 +84,7 @@ namespace SchoolMedical_BusinessLogic.Core
                     Amount = m.Amount,
                     IsAvailable = m.IsAvailable,
                     CreatedBy = m.CreatedBy,
-                    CreatedByName = m.CreatedByNavigation.FullName ?? "Unknown",
+                    CreatedByName = m.CreatedByNavigation.FullName ?? "Unknown"
                 })
                 .FirstOrDefaultAsync();
 
@@ -93,82 +93,116 @@ namespace SchoolMedical_BusinessLogic.Core
 
         public async Task<MedicineResponseDto> CreateMedicineAsync(CreateMedicineRequestDto request, string createdBy)
         {
-            var medicine = new Medicine
+            try
             {
-                Id = Guid.NewGuid().ToString(),
-                Name = request.Name,
-                Description = request.Description,
-                Amount = request.Amount,
-                IsAvailable = request.IsAvailable ?? true,
-                CreatedBy = createdBy,
-                IsDeleted = false
-            };
+                _unitOfWork.BeginTransaction(); 
 
-            await _medicineRepository.InsertAsync(medicine);
-            await _unitOfWork.SaveAsync();
+                var medicine = new Medicine
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    Name = request.Name,
+                    Description = request.Description,
+                    Amount = request.Amount,
+                    IsAvailable = request.IsAvailable ?? true,
+                    CreatedBy = createdBy,
+                    IsDeleted = false
+                };
 
-            // Reload with navigation properties
-            var createdMedicine = await _medicineRepository
-                .Include(m => m.CreatedByNavigation)
-                .FirstOrDefaultAsync(m => m.Id == medicine.Id);
+                await _medicineRepository.InsertAsync(medicine);
+                await _unitOfWork.SaveAsync();
 
-            return new MedicineResponseDto
+                _unitOfWork.CommitTransaction();
+
+                var createdMedicine = await _medicineRepository
+                    .Include(m => m.CreatedByNavigation)
+                    .FirstOrDefaultAsync(m => m.Id == medicine.Id);
+
+                return new MedicineResponseDto
+                {
+                    Id = createdMedicine.Id,
+                    Name = createdMedicine.Name,
+                    Description = createdMedicine.Description,
+                    Amount = createdMedicine.Amount,
+                    IsAvailable = createdMedicine.IsAvailable,
+                    CreatedBy = createdMedicine.CreatedBy,
+                    CreatedByName = createdMedicine.CreatedByNavigation?.FullName ?? "Unknown"
+                };
+            }
+            catch
             {
-                Id = createdMedicine.Id,
-                Name = createdMedicine.Name,
-                Description = createdMedicine.Description,
-                Amount = createdMedicine.Amount,
-                IsAvailable = createdMedicine.IsAvailable,
-                CreatedBy = createdMedicine.CreatedBy,
-                CreatedByName = createdMedicine.CreatedByNavigation?.FullName ?? "Unknown"
-            };
+                _unitOfWork.RollBack();
+                throw;
+            }
         }
 
         public async Task<MedicineResponseDto> UpdateMedicineAsync(UpdateMedicineRequestDto request, string updatedBy)
         {
-            var medicine = await _medicineRepository.GetByIdAsync(request.Id);
-            if (medicine == null || medicine.IsDeleted)
+            try
             {
-                throw new ArgumentException("Medicine not found");
+                _unitOfWork.BeginTransaction();
+
+                var medicine = await _medicineRepository.GetByIdAsync(request.Id);
+                if (medicine == null || medicine.IsDeleted)
+                {
+                    throw new KeyNotFoundException("Medicine not found");
+                }
+
+                medicine.Name = request.Name;
+                medicine.Description = request.Description;
+                medicine.Amount = request.Amount;
+                medicine.IsAvailable = request.IsAvailable;
+
+                await _medicineRepository.UpdateAsync(medicine);
+                await _unitOfWork.SaveAsync();
+
+                _unitOfWork.CommitTransaction();
+
+                var updatedMedicine = await _medicineRepository
+                    .Include(m => m.CreatedByNavigation)
+                    .FirstOrDefaultAsync(m => m.Id == medicine.Id);
+
+                return new MedicineResponseDto
+                {
+                    Id = updatedMedicine.Id,
+                    Name = updatedMedicine.Name,
+                    Description = updatedMedicine.Description,
+                    Amount = updatedMedicine.Amount,
+                    IsAvailable = updatedMedicine.IsAvailable,
+                    CreatedBy = updatedMedicine.CreatedBy,
+                    CreatedByName = updatedMedicine.CreatedByNavigation?.FullName ?? "Unknown"
+                };
             }
-
-            medicine.Name = request.Name;
-            medicine.Description = request.Description;
-            medicine.Amount = request.Amount;
-            medicine.IsAvailable = request.IsAvailable;
-
-            await _medicineRepository.UpdateAsync(medicine);
-            await _unitOfWork.SaveAsync();
-
-            // Reload with navigation properties
-            var updatedMedicine = await _medicineRepository
-                .Include(m => m.CreatedByNavigation)
-                .FirstOrDefaultAsync(m => m.Id == medicine.Id);
-
-            return new MedicineResponseDto
+            catch
             {
-                Id = updatedMedicine.Id,
-                Name = updatedMedicine.Name,
-                Description = updatedMedicine.Description,
-                Amount = updatedMedicine.Amount,
-                IsAvailable = updatedMedicine.IsAvailable,
-                CreatedBy = updatedMedicine.CreatedBy,
-                CreatedByName = updatedMedicine.CreatedByNavigation?.FullName ?? "Unknown"
-            };
+                _unitOfWork.RollBack();
+                throw;
+            }
         }
 
         public async Task<bool> DeleteMedicineAsync(string id)
         {
-            var medicine = await _medicineRepository.GetByIdAsync(id);
-            if (medicine == null || medicine.IsDeleted)
+            try
             {
-                return false;
-            }
+                _unitOfWork.BeginTransaction();
 
-            medicine.IsDeleted = true;
-            await _medicineRepository.UpdateAsync(medicine);
-            await _unitOfWork.SaveAsync();
-            return true;
+                var medicine = await _medicineRepository.GetByIdAsync(id);
+                if (medicine == null || medicine.IsDeleted)
+                {
+                    return false;
+                }
+
+                medicine.IsDeleted = true;
+                await _medicineRepository.UpdateAsync(medicine);
+                await _unitOfWork.SaveAsync();
+
+                _unitOfWork.CommitTransaction();
+                return true;
+            }
+            catch
+            {
+                _unitOfWork.RollBack();
+                throw;
+            }
         }
 
         private IQueryable<Medicine> ApplySorting(IQueryable<Medicine> query, string? sortBy, bool isDescending)

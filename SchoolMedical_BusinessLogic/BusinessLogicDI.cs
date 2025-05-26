@@ -42,7 +42,7 @@ public static class BusinessLogicDI
 		services.AddLogging();
 		services.AddScoped<IAuthService, AuthService>();
 		services.AddScoped<IJwtUtils, JwtUtils>();
-		
+		services.AddScoped<IMedicineService, MedicineService>();
 
 
 
