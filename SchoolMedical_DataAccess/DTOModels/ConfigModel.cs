@@ -13,14 +13,13 @@ public class DBConnection
 	public string? ConnectionString { get; set; } = string.Empty;
 }
 
-	/// <summary>
-	/// JWTToken is also used as login response.
-	/// </summary>
-	public class JWTToken
+/// <summary>
+/// JWTToken is also used as login response, which only return token
+/// If you want to return user data, call user detail API instead.
+/// </summary>
+public class JWTToken
 {
 	public string? TokenString { get; set; }
-	public string? Id { get; set; }
-	public string? Email { get; set; }
 	public long ExpiresInMilliseconds { get; set; }
 }
 
@@ -47,5 +46,13 @@ public class TokenResponse
 
 	[JsonPropertyName("refresh_token")]
 	public string? RefreshToken { get; set; }
+}
+
+public class ResultApi
+{
+	public string StatusCode { get; set; } = string.Empty;
+	public string Message { get; set; } = string.Empty;
+	public object? Data { get; set; }
+
 }
 

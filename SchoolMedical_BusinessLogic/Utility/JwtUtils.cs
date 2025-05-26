@@ -35,9 +35,7 @@ public class JwtUtils  : IJwtUtils
 		var tokenString = tokenHandler.WriteToken(token);
 		var jwtToken = new JWTToken
 		{
-			TokenString = tokenString,
-			Id = account.Id,
-			Email = account.Email,
+			TokenString = tokenString,		
 			ExpiresInMilliseconds = (long)(expirationTime - DateTime.UtcNow).TotalMilliseconds
 		};
 		return jwtToken;
