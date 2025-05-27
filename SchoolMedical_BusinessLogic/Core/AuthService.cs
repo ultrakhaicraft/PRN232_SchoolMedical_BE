@@ -46,22 +46,18 @@ public class AuthService : IAuthService
 			new Claim(ClaimTypes.Name, account.FullName?? "N/A"),
 			new Claim(ClaimTypes.Email, account.Email ?? "N/A"),
 			new Claim(ClaimTypes.Role, account.Role ?? "N/A"),
-			new Claim("Parent Name", account.Parent?.FullName ?? "N/A"),
 			new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
 		};
 
 		var token = _jwtUtils.GenerateToken(authClaims, _configuration.GetSection("JwtSettings").Get<JwtModel>(), account);
 
-		
+
 		return token;
 	}
-	public async Task<RegisterResponse> RegisteAsync(RegisterRequest request, bool IsParent)
+	public async Task<string> RegisteAsync(RegisterRequest request, bool IsParent)
 	{
 		try
 		{
-			if (request.Password != request.ConfirmPassword)
-				throw new AppException(ErrorMessage.ConfirmPasswordNotMatch);
-
 			var existingAccount = _unitOfWork.GetRepository<Account>().Find(user => user.Email == request.Email);
 			if (existingAccount != null)
 				throw new AppException(ErrorMessage.EmailExist);
@@ -88,10 +84,8 @@ public class AuthService : IAuthService
 			await _unitOfWork.SaveAsync();
 
 
-			return new RegisterResponse
-			{
-				Id = account.Id
-			};
+
+			return account.Id;
 		}
 		catch (Exception e)
 		{

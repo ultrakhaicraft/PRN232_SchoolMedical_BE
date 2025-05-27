@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using MySqlX.XDevAPI.Common;
+using PRN232_SchoolMedicalAPI.Helpers;
 using SchoolMedical_BusinessLogic.Interface;
 using SchoolMedical_DataAccess.DTOModels;
 
@@ -25,8 +27,9 @@ public class AuthController : ControllerBase
 		{
 			return BadRequest();
 		}
-		var data = await _authService.Login(request);
-		return Ok(data);
+		var response = await _authService.Login(request);
+		HttpContext.Items["CustomMessage"] = "Login successfully, granting token";
+		return Ok(response);
 	}
 
 	
@@ -39,8 +42,9 @@ public class AuthController : ControllerBase
 		{
 			return BadRequest();
 		}
-		var result = await _authService.RegisteAsync(request, IsParent);
-		return Ok(result);
+		var response = await _authService.RegisteAsync(request, IsParent);
+		HttpContext.Items["CustomMessage"] = "User registered successfully!"; 
+		return Ok(response);
 
 	}
 }

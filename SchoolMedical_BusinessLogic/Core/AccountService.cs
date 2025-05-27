@@ -10,5 +10,8 @@ namespace SchoolMedical_BusinessLogic.Core;
 
 public class AccountService : IAccountService
 {
-	
+	public Task<UserDetailModel> GetUserDetailByIdAsync(string userId)
+	{
+		throw new NotImplementedException();
+	}
 }

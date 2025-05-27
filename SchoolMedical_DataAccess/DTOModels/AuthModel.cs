@@ -32,8 +32,4 @@ public class RegisterRequest
 
 }
 
-public class RegisterResponse
-{
-	public string? Id { get; set; }
-	public readonly string? Message= "Register Success";
-}
+
