@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Net;
 using System.Text.Json.Serialization;
 using System.Text.Json;
+using SchoolMedical_DataAccess.DTOModels;
 
 namespace PRN232_SchoolMedicalAPI.Helpers;
 
@@ -22,13 +23,7 @@ public class ResponseHandlerMiddleware
 	}
 }
 
-public class ResultApi
-{
-	public string StatusCode { get; set; } = string.Empty;
-	public string Message { get; set; } = string.Empty;
-	public object? Data { get; set; }
 
-}
 
 public class ResultManipulator : IResultFilter
 {
@@ -52,6 +47,7 @@ public class ResultManipulator : IResultFilter
 			var resp = new ResultApi
 			{
 				StatusCode = context.HttpContext.Response.StatusCode.ToString()
+
 			};
 
 			if (!context.ModelState.IsValid)
@@ -78,6 +74,15 @@ public class ResultManipulator : IResultFilter
 				context.HttpContext.Response.StatusCode = (int)HttpStatusCode.BadRequest;
 
 				return;
+			}
+
+			if (context.HttpContext.Items.TryGetValue("CustomMessage", out var message))
+			{
+				resp.Message = message as string ?? "Success";
+			}
+			else
+			{
+				resp.Message = "Success"; // Default
 			}
 
 			if (resultObj is not null)

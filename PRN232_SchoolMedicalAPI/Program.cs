@@ -41,6 +41,9 @@ if (app.Environment.IsDevelopment())
     await context.Database.EnsureCreatedAsync();
     await SeedData.SeedAsync(context);
 }
+app.UseCors("AllowAllOrigins");
+
+app.UseMiddleware<ErrorHandlerMiddleware>();
 
 app.UseHttpsRedirection();
 

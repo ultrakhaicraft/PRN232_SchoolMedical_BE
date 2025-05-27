@@ -15,6 +15,6 @@ namespace SchoolMedical_BusinessLogic.Interface;
 public interface IAuthService
 {
 	Task<JWTToken> Login(LoginRequest request);
-	Task<RegisterResponse> RegisteAsync(RegisterRequest request, bool IsParent);
+	Task<string> RegisteAsync(RegisterRequest request, bool IsParent);
 	
 }

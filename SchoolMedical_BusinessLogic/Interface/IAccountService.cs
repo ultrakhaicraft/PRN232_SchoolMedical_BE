@@ -13,5 +13,5 @@ namespace SchoolMedical_BusinessLogic.Interface;
 /// </summary>
 public interface IAccountService
 {
-	
+	public Task<UserDetailModel> GetUserDetailByIdAsync(string userId);
 }
