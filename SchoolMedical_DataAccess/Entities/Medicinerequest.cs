@@ -15,6 +15,8 @@ public partial class Medicinerequest
 
     public DateTime DateSent { get; set; }
 
+    public string? Status { get; set; }
+
     public virtual Account ForStudentNavigation { get; set; } = null!;
 
     public virtual Account RequestByNavigation { get; set; } = null!;

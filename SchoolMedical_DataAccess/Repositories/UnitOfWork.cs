@@ -1,4 +1,5 @@
-﻿using SchoolMedical_DataAccess.Entities;
+﻿
+using SchoolMedical_DataAccess.Entities;
 using SchoolMedical_DataAccess.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -7,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace SchoolMedical_DataAccess.Repositories;
+
 
 public class UnitOfWork : IUnitOfWork
 {
@@ -60,3 +62,5 @@ public class UnitOfWork : IUnitOfWork
 		_dbContext.Database.RollbackTransaction();
 	}
 }
+
+

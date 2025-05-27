@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 
 namespace SchoolMedical_DataAccess.Repositories;
 
+
 public class GenericRepository <T> : IGenericRepository<T> where T : class
 {
 	protected readonly SchoolhealthdbContext _context;
@@ -115,3 +116,4 @@ public class GenericRepository <T> : IGenericRepository<T> where T : class
 
 
 }
+
