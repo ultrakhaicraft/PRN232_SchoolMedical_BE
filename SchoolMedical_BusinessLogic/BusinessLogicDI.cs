@@ -43,6 +43,8 @@ public static class BusinessLogicDI
 		services.AddScoped<IAuthService, AuthService>();
 		services.AddScoped<IJwtUtils, JwtUtils>();
 		services.AddScoped<IAccountService, AccountService>();
+    services.AddScoped<IMedicineService, MedicineService>();
+
 
 
 
