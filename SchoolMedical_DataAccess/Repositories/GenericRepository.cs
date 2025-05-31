@@ -40,6 +40,11 @@ public class GenericRepository <T> : IGenericRepository<T> where T : class
 		return _dbSet.FirstOrDefault(predicate);
 	}
 
+	public async Task<T?> FindAsync(Expression<Func<T, bool>> predicate)
+	{
+		return await _dbSet.FirstOrDefaultAsync(predicate);
+	}
+
 	public T? GetById(object id)
 	{
 
@@ -114,6 +119,6 @@ public class GenericRepository <T> : IGenericRepository<T> where T : class
 		return query;
 	}
 
-
+	
 }
 

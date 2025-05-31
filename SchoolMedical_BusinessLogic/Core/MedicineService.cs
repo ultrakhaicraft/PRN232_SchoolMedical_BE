@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SchoolMedical_BusinessLogic.Interface;
+using SchoolMedical_BusinessLogic.Utility;
 using SchoolMedical_DataAccess.DTOModels;
 using SchoolMedical_DataAccess.Entities;
 using SchoolMedical_DataAccess.Interfaces;
@@ -17,6 +18,7 @@ public class MedicineService : IMedicineService
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IGenericRepository<Medicine> _medicineRepository;
+    
 
     public MedicineService(IUnitOfWork unitOfWork)
     {
@@ -24,79 +26,97 @@ public class MedicineService : IMedicineService
         _medicineRepository = _unitOfWork.GetRepository<Medicine>();
     }
 
-    public async Task<PagingModel<MedicineResponseDto>> GetMedicinesAsync(MedicineFilterRequestDto request)
-    {
-        var query = _medicineRepository.Include(m => m.CreatedByNavigation)
-            .Where(m => !m.IsDeleted);
-
-        // Apply filters
-        if (!string.IsNullOrEmpty(request.Name))
-        {
-            query = query.Where(m => m.Name.ToLower().Contains(request.Name.ToLower()));
-        }
-
-        if (request.IsAvailable.HasValue)
-        {
-            query = query.Where(m => m.IsAvailable == request.IsAvailable.Value);
-        }
-
-        // Apply sorting
-        query = ApplySorting(query, request.SortBy, request.IsDescending);
-
-        // Get total count
-        var totalCount = await query.CountAsync();
-
-        // Apply paging
-        var medicines = await query
-            .Skip((request.PageIndex - 1) * request.PageSize)
-            .Take(request.PageSize)
-            .Select(m => new MedicineResponseDto
-            {
-                Id = m.Id,
-                Name = m.Name,
-                Description = m.Description,
-                Amount = m.Amount,
-                IsAvailable = m.IsAvailable,
-                CreatedBy = m.CreatedBy,
-                CreatedByName = m.CreatedByNavigation.FullName ?? "Unknown"
-            })
-            .ToListAsync();
-
-        return new PagingModel<MedicineResponseDto>
-        {
-            PageIndex = request.PageIndex,
-            PageSize = request.PageSize,
-            TotalCount = totalCount,
-            TotalPages = (int)Math.Ceiling((double)totalCount / request.PageSize),
-            Data = medicines
-        };
-    }
-
-    public async Task<MedicineResponseDto?> GetMedicineByIdAsync(string id)
-    {
-        var medicine = await _medicineRepository
-            .Include(m => m.CreatedByNavigation)
-            .Where(m => m.Id == id && !m.IsDeleted)
-            .Select(m => new MedicineResponseDto
-            {
-                Id = m.Id,
-                Name = m.Name,
-                Description = m.Description,
-                Amount = m.Amount,
-                IsAvailable = m.IsAvailable,
-                CreatedBy = m.CreatedBy,
-                CreatedByName = m.CreatedByNavigation.FullName ?? "Unknown"
-            })
-            .FirstOrDefaultAsync();
-
-        return medicine;
-    }
-
-    public async Task<MedicineResponseDto> CreateMedicineAsync(CreateMedicineRequestDto request, string createdBy)
+    public async Task<PagingModel<MedicineDetailResponseDto>> GetAllMedicinesAsync(MedicineFilterRequestDto request)
     {
         try
         {
-            _unitOfWork.BeginTransaction(); 
+			var query = _medicineRepository.Include(m => m.CreatedByNavigation)
+			.Where(m => !m.IsDeleted);
+
+			// Apply filters search by name and availability
+			if (!string.IsNullOrEmpty(request.Name))
+			{
+				query = query.Where(m => m.Name.ToLower().Contains(request.Name.ToLower()));
+			}
+
+			if (request.IsAvailable.HasValue)
+			{
+				query = query.Where(m => m.IsAvailable == request.IsAvailable.Value);
+			}
+
+			// Apply sorting
+			query = ApplySorting(query, request.SortBy, request.IsDescending);
+
+            //Convert Medicine to MedicineDetailResponseDto
+
+            var medicineResponseDto = 
+                query.Select(m => new MedicineDetailResponseDto
+                {
+                    Id = m.Id,
+                    Name = m.Name,
+                    Description = m.Description,
+                    Amount = m.Amount,
+                    IsAvailable = m.IsAvailable,
+                    CreatedBy = m.CreatedBy,
+                    CreatedByName = m.CreatedByNavigation.FullName ?? "Unknown"
+                });
+
+
+			// Apply paging
+			var medicinePage = await PagingExtension.ToPagingModel<MedicineDetailResponseDto>(medicineResponseDto.AsQueryable(), request.PageIndex, request.PageSize);
+
+
+			return new PagingModel<MedicineDetailResponseDto>
+			{
+				PageIndex = medicinePage.PageIndex,
+				PageSize = medicinePage.PageSize,
+				TotalCount = medicinePage.TotalCount,
+				TotalPages = medicinePage.TotalPages,
+				Data = medicinePage.Data
+			};
+		}
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error fetching all medicine:{ex.Message}");
+            throw new Exception(ex.Message);
+        }
+    }
+
+    public async Task<MedicineDetailResponseDto?> GetMedicineDetailByIdAsync(string id)
+    {
+        try
+        {
+			var medicine = await _medicineRepository
+			.Include(m => m.CreatedByNavigation)
+			.Where(m => m.Id == id && !m.IsDeleted)
+			.Select(m => new MedicineDetailResponseDto
+			{
+				Id = m.Id,
+				Name = m.Name,
+				Description = m.Description,
+				Amount = m.Amount,
+				IsAvailable = m.IsAvailable,
+				CreatedBy = m.CreatedBy,
+				CreatedByName = m.CreatedByNavigation.FullName ?? "Unknown"
+			})
+			.FirstOrDefaultAsync();
+
+			return medicine;
+		}
+        catch (Exception ex)
+        {
+			Console.WriteLine($"Error fetching medicine:{ex.Message}");
+			throw new Exception(ex.Message);
+
+        }
+    }
+
+    public async Task<MedicineDetailResponseDto> CreateMedicineAsync(CreateMedicineRequestDto request, string createdBy)
+    {
+        try
+        {
+            //Start Transaction Here
+            await _unitOfWork.BeginTransactionAsync(); 
 
             var medicine = new Medicine
             {
@@ -112,16 +132,16 @@ public class MedicineService : IMedicineService
             await _medicineRepository.InsertAsync(medicine);
             await _unitOfWork.SaveAsync();
 
-            _unitOfWork.CommitTransaction();
+            await _unitOfWork.CommitTransactionAsync();
 
             var createdMedicine = await _medicineRepository
                 .Include(m => m.CreatedByNavigation)
                 .FirstOrDefaultAsync(m => m.Id == medicine.Id);
 
-            return new MedicineResponseDto
+            return new MedicineDetailResponseDto
             {
-                Id = createdMedicine.Id,
-                Name = createdMedicine.Name,
+                Id = createdMedicine!.Id,
+                Name = createdMedicine!.Name,
                 Description = createdMedicine.Description,
                 Amount = createdMedicine.Amount,
                 IsAvailable = createdMedicine.IsAvailable,
@@ -129,26 +149,27 @@ public class MedicineService : IMedicineService
                 CreatedByName = createdMedicine.CreatedByNavigation?.FullName ?? "Unknown"
             };
         }
-        catch
+        catch(Exception ex)
         {
-            _unitOfWork.RollBack();
-            throw;
+            Console.WriteLine($"Error creating medicine: {ex.Message}");
+			await _unitOfWork.RollBackAsync();
+            throw new Exception(ex.Message);
         }
     }
 
-    public async Task<MedicineResponseDto> UpdateMedicineAsync(UpdateMedicineRequestDto request, string updatedBy)
+    public async Task<MedicineDetailResponseDto> UpdateMedicineAsync(UpdateMedicineRequestDto request, string medicineId)
     {
         try
         {
-            _unitOfWork.BeginTransaction();
+            await _unitOfWork.BeginTransactionAsync();
 
-            var medicine = await _medicineRepository.GetByIdAsync(request.Id);
+            var medicine = await _medicineRepository.GetByIdAsync(medicineId);
             if (medicine == null || medicine.IsDeleted)
             {
-                throw new KeyNotFoundException("Medicine not found");
+                throw new AppException(ErrorMessage.MedicineNotFound);
             }
-
-            medicine.Name = request.Name;
+			//Update the medicine properties
+			medicine.Name = request.Name;
             medicine.Description = request.Description;
             medicine.Amount = request.Amount;
             medicine.IsAvailable = request.IsAvailable;
@@ -156,15 +177,16 @@ public class MedicineService : IMedicineService
             await _medicineRepository.UpdateAsync(medicine);
             await _unitOfWork.SaveAsync();
 
-            _unitOfWork.CommitTransaction();
+            await _unitOfWork.CommitTransactionAsync();
 
-            var updatedMedicine = await _medicineRepository
+			// Fetch the updated medicine with CreatedByNavigation for response
+			var updatedMedicine = await _medicineRepository
                 .Include(m => m.CreatedByNavigation)
                 .FirstOrDefaultAsync(m => m.Id == medicine.Id);
 
-            return new MedicineResponseDto
+            return new MedicineDetailResponseDto
             {
-                Id = updatedMedicine.Id,
+                Id = updatedMedicine!.Id,
                 Name = updatedMedicine.Name,
                 Description = updatedMedicine.Description,
                 Amount = updatedMedicine.Amount,
@@ -173,20 +195,21 @@ public class MedicineService : IMedicineService
                 CreatedByName = updatedMedicine.CreatedByNavigation?.FullName ?? "Unknown"
             };
         }
-        catch
-        {
-            _unitOfWork.RollBack();
-            throw;
-        }
+        catch(Exception ex)
+		{
+			Console.WriteLine($"Error updating medicine: {ex.Message}");
+			await _unitOfWork.RollBackAsync();
+			throw new Exception(ex.Message);
+		}
     }
 
-    public async Task<bool> DeleteMedicineAsync(string id)
+    public async Task<bool> SoftDeleteMedicineAsync(string medicineId)
     {
         try
         {
             _unitOfWork.BeginTransaction();
 
-            var medicine = await _medicineRepository.GetByIdAsync(id);
+            var medicine = await _medicineRepository.GetByIdAsync(medicineId);
             if (medicine == null || medicine.IsDeleted)
             {
                 return false;

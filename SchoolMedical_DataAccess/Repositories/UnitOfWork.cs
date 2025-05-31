@@ -51,15 +51,27 @@ public class UnitOfWork : IUnitOfWork
 	{
 		_dbContext.Database.BeginTransaction();
 	}
+	public async Task BeginTransactionAsync()
+	{
+		await _dbContext.Database.BeginTransactionAsync();
+	}
 
 	public void CommitTransaction()
 	{
 		_dbContext.Database.CommitTransaction();
 	}
+	public async Task CommitTransactionAsync()
+	{
+		await _dbContext.Database.CommitTransactionAsync();
+	}
 
 	public void RollBack()
 	{
 		_dbContext.Database.RollbackTransaction();
+	}
+	public async Task RollBackAsync()
+	{
+		await _dbContext.Database.RollbackTransactionAsync();
 	}
 }
 
