@@ -17,6 +17,8 @@ public partial class Incidentrecord
 
     public DateTime DateOccurred { get; set; }
 
+    public string? Status { get; set; }
+
     public virtual Account HandleByNavigation { get; set; } = null!;
 
     public virtual Account Student { get; set; } = null!;

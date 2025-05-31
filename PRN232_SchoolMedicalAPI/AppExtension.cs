@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using SchoolMedical_DataAccess.Entities;
 using System.Text;
+using Google.Protobuf.WellKnownTypes;
+using Microsoft.OpenApi.Models;
 
 namespace PRN232_SchoolMedicalAPI;
 
@@ -36,15 +38,38 @@ public static class AppExtension
 		services.AddEndpointsApiExplorer();
 		services.AddSwaggerGen(c =>
 		{
-			c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
+			c.SwaggerDoc("v1", new OpenApiInfo
 			{
 				Version = "v1",
 				Title = "School Medical API",
 				Description = "API for School Medical System"
 			});
 			c.CustomSchemaIds(type => type.FullName);
-			
+			c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+					{
+						In = ParameterLocation.Header,
+						Description = "Please enter a valid token",
+						Name = "Authorization",
+						Type = SecuritySchemeType.Http,
+						BearerFormat = "JWT",
+						Scheme = "Bearer"
+					});
+			c.AddSecurityRequirement(new OpenApiSecurityRequirement
+					{
+						{
+							new OpenApiSecurityScheme
+							{
+								Reference = new OpenApiReference
+								{
+									Type = ReferenceType.SecurityScheme,
+									Id = "Bearer"
+								}
+							},
+							new string[]{}
+						}
+					});
 		});
+
 	}
 
 	public static void AddDatabase(this IServiceCollection services,DBConnection connection)

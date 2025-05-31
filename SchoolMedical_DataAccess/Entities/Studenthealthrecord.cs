@@ -3,6 +3,7 @@ using System.Collections.Generic;
 
 namespace SchoolMedical_DataAccess.Entities;
 
+//Missing Created Date & Updated Date (Ignore for now)
 public partial class Studenthealthrecord
 {
     public string Id { get; set; } = null!;
@@ -20,6 +21,8 @@ public partial class Studenthealthrecord
     public string? Vision { get; set; }
 
     public string? Hearing { get; set; }
+
+    public string? Status { get; set; }
 
     public virtual Account CreatedByNavigation { get; set; } = null!;
 

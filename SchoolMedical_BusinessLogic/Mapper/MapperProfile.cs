@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using SchoolMedical_DataAccess.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,5 +20,6 @@ public class MapperProfile : Profile
 		// CreateMap<SchoolNurse, SchoolNurseDTO>();
 		// CreateMap<Manager, ManagerDTO>();
 		// CreateMap<Admin, AdminDTO>();
+		
 	}
 }

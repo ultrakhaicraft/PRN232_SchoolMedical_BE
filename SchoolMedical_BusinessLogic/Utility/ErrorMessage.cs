@@ -18,4 +18,6 @@ public static class ErrorMessage
 	public static string EmailExist ="This email has already used";
 	public static string EmailNotFound ="Can't found the account with Email";
 	public static string PasswordIncorrect ="The password is not correct";
+
+	public static string MedicineNotFound= "The Medicine not found with this ID";
 }

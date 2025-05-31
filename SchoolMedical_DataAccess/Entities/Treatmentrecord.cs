@@ -17,6 +17,8 @@ public partial class Treatmentrecord
 
     public string? Description { get; set; }
 
+    public string? Status { get; set; }
+
     public virtual Account Student { get; set; } = null!;
 
     public virtual Studenthealthrecord StudentHealthRecord { get; set; } = null!;

@@ -21,6 +21,8 @@ public partial class Account
 
     public string? Address { get; set; }
 
+    public string? Status { get; set; }
+
     public virtual ICollection<Healthcheckupevent> HealthcheckupeventCreatedByNavigations { get; set; } = new List<Healthcheckupevent>();
 
     public virtual ICollection<Healthcheckupevent> HealthcheckupeventStudents { get; set; } = new List<Healthcheckupevent>();

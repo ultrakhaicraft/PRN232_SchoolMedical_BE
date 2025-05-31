@@ -9,10 +9,10 @@ namespace SchoolMedical_BusinessLogic.Interface
 {
     public interface IMedicineService
     {
-        Task<PagingModel<MedicineResponseDto>> GetMedicinesAsync(MedicineFilterRequestDto request);
-        Task<MedicineResponseDto?> GetMedicineByIdAsync(string id);
-        Task<MedicineResponseDto> CreateMedicineAsync(CreateMedicineRequestDto request, string createdBy);
-        Task<MedicineResponseDto> UpdateMedicineAsync(UpdateMedicineRequestDto request, string updatedBy);
-        Task<bool> DeleteMedicineAsync(string id);
+        Task<PagingModel<MedicineDetailResponseDto>> GetAllMedicinesAsync(MedicineFilterRequestDto request);
+        Task<MedicineDetailResponseDto?> GetMedicineDetailByIdAsync(string id);
+        Task<MedicineDetailResponseDto> CreateMedicineAsync(CreateMedicineRequestDto request, string createdBy);
+        Task<MedicineDetailResponseDto> UpdateMedicineAsync(UpdateMedicineRequestDto request, string medicineId);
+        Task<bool> SoftDeleteMedicineAsync(string id);
     }
 }

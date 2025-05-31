@@ -15,10 +15,40 @@ public enum AccountRole
 	Admin
 }
 
+public enum AccountStatus
+{
+	Active,
+	Inactive, //Soft Delete
+}
+
 public enum IsAvailable
 {
-	Yes,
-	No
+	Yes=1,
+	No=0
+}
+
+public enum RecordStatus
+{
+	Active,
+	Inactive, //Soft Delete
+}
+
+public enum RequestStatus
+{
+	Pending,
+	Approved,
+	Rejected,
+	Deleted, //Soft Delete
+}
+
+//Become deleted through Soft Delete API
+public enum EventStatus
+{
+	Upcoming,
+	Ongoing,
+	Completed,
+	Cancelled,
+	
 }
 
 

@@ -17,6 +17,7 @@ using System.Threading.Tasks;
 
 namespace SchoolMedical_BusinessLogic.Core;
 
+
 public class AuthService : IAuthService
 {
 	private readonly IUnitOfWork _unitOfWork;
@@ -108,3 +109,4 @@ public class AuthService : IAuthService
 		return true;
 	}
 }
+

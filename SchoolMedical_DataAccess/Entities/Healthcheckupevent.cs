@@ -23,6 +23,8 @@ public partial class Healthcheckupevent
 
     public DateTime? DateSignupEnd { get; set; }
 
+    public string? Status { get; set; }
+
     public virtual Account CreatedByNavigation { get; set; } = null!;
 
     public virtual Account? Student { get; set; }

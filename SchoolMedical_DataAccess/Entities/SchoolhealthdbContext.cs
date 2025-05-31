@@ -35,9 +35,6 @@ public partial class SchoolhealthdbContext : DbContext
 
     public virtual DbSet<Vaccinerecord> Vaccinerecords { get; set; }
 
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseMySQL("server=localhost;port=3306;user=root;password=12345;database=schoolhealthdb;");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -55,12 +52,13 @@ public partial class SchoolhealthdbContext : DbContext
 
             entity.Property(e => e.Id).HasMaxLength(50);
             entity.Property(e => e.Address).HasMaxLength(100);
-            entity.Property(e => e.Email).HasMaxLength(25);
+            entity.Property(e => e.Email).HasMaxLength(50);
             entity.Property(e => e.FullName).HasMaxLength(25);
             entity.Property(e => e.ParentId).HasMaxLength(50);
             entity.Property(e => e.Password).HasMaxLength(255);
             entity.Property(e => e.PhoneNumber).HasMaxLength(50);
             entity.Property(e => e.Role).HasMaxLength(15);
+            entity.Property(e => e.Status).HasMaxLength(20);
 
             entity.HasOne(d => d.Parent).WithMany(p => p.InverseParent)
                 .HasForeignKey(d => d.ParentId)
@@ -85,6 +83,7 @@ public partial class SchoolhealthdbContext : DbContext
             entity.Property(e => e.DateSignupEnd).HasColumnType("datetime");
             entity.Property(e => e.DateSignupStart).HasColumnType("datetime");
             entity.Property(e => e.ShortDescription).HasMaxLength(255);
+            entity.Property(e => e.Status).HasMaxLength(20);
             entity.Property(e => e.StudentId).HasMaxLength(50);
             entity.Property(e => e.Title).HasMaxLength(100);
 
@@ -114,6 +113,7 @@ public partial class SchoolhealthdbContext : DbContext
             entity.Property(e => e.Description).HasColumnType("text");
             entity.Property(e => e.HandleBy).HasMaxLength(50);
             entity.Property(e => e.IncidentType).HasMaxLength(50);
+            entity.Property(e => e.Status).HasMaxLength(20);
             entity.Property(e => e.StudentId).HasMaxLength(50);
 
             entity.HasOne(d => d.HandleByNavigation).WithMany(p => p.IncidentrecordHandleByNavigations)
@@ -185,6 +185,7 @@ public partial class SchoolhealthdbContext : DbContext
             entity.Property(e => e.Description).HasColumnType("text");
             entity.Property(e => e.ForStudent).HasMaxLength(50);
             entity.Property(e => e.RequestBy).HasMaxLength(50);
+            entity.Property(e => e.Status).HasMaxLength(20);
 
             entity.HasOne(d => d.ForStudentNavigation).WithMany(p => p.MedicinerequestForStudentNavigations)
                 .HasForeignKey(d => d.ForStudent)
@@ -210,6 +211,7 @@ public partial class SchoolhealthdbContext : DbContext
             entity.Property(e => e.ChronicDiseases).HasColumnType("text");
             entity.Property(e => e.CreatedBy).HasMaxLength(50);
             entity.Property(e => e.Hearing).HasColumnType("text");
+            entity.Property(e => e.Status).HasMaxLength(20);
             entity.Property(e => e.StudentId).HasMaxLength(50);
             entity.Property(e => e.Vision).HasColumnType("text");
 
@@ -236,6 +238,7 @@ public partial class SchoolhealthdbContext : DbContext
             entity.Property(e => e.Id).HasMaxLength(50);
             entity.Property(e => e.Description).HasColumnType("text");
             entity.Property(e => e.RecordDate).HasColumnType("datetime");
+            entity.Property(e => e.Status).HasMaxLength(20);
             entity.Property(e => e.StudentHealthRecordId).HasMaxLength(50);
             entity.Property(e => e.StudentId).HasMaxLength(50);
             entity.Property(e => e.Treatment).HasMaxLength(50);
@@ -266,6 +269,7 @@ public partial class SchoolhealthdbContext : DbContext
             entity.Property(e => e.DateSignupEnd).HasColumnType("datetime");
             entity.Property(e => e.DateSignupStart).HasColumnType("datetime");
             entity.Property(e => e.ShortDescription).HasMaxLength(255);
+            entity.Property(e => e.Status).HasMaxLength(20);
             entity.Property(e => e.StudentId).HasMaxLength(50);
             entity.Property(e => e.Title).HasMaxLength(100);
 
@@ -293,6 +297,7 @@ public partial class SchoolhealthdbContext : DbContext
             entity.Property(e => e.Id).HasMaxLength(50);
             entity.Property(e => e.Description).HasColumnType("text");
             entity.Property(e => e.RecordDate).HasColumnType("datetime");
+            entity.Property(e => e.Status).HasMaxLength(20);
             entity.Property(e => e.StudentHealthRecordId).HasMaxLength(50);
             entity.Property(e => e.StudentId).HasMaxLength(50);
             entity.Property(e => e.Vaccine).HasMaxLength(50);

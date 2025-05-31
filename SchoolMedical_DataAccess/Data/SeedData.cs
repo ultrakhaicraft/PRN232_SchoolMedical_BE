@@ -1,4 +1,4 @@
-﻿using SchoolMedical_DataAccess.Entities;
+﻿
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 namespace SchoolMedical_DataAccess.Data
 {
+    /*
     public static class SeedData
     {
         private static readonly Random _random = new Random();
@@ -568,4 +569,6 @@ namespace SchoolMedical_DataAccess.Data
             await context.SaveChangesAsync();
         }
     }
+
+    */
 }

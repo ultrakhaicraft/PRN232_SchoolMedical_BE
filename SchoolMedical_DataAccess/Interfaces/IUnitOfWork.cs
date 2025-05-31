@@ -12,7 +12,10 @@ public interface IUnitOfWork : IDisposable
 	void Save();
 	Task SaveAsync();
 	void BeginTransaction();
+	Task BeginTransactionAsync();
 	void CommitTransaction();
+	Task CommitTransactionAsync();
 	void RollBack();
+	Task RollBackAsync();
 
 }
