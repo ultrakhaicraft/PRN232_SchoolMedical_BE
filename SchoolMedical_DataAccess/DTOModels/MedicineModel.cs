@@ -22,10 +22,9 @@ namespace SchoolMedical_DataAccess.DTOModels
         public bool? IsAvailable { get; set; }
     }
 
+    //No ID because API Query already have Id
     public class UpdateMedicineRequestDto
-    {
-        [Required(ErrorMessage = "Medicine ID is required")]
-        public string Id { get; set; } = null!;
+    {   
 
         [Required(ErrorMessage = "Medicine name is required")]
         [StringLength(100, MinimumLength = 2, ErrorMessage = "Medicine name must be between 2 and 100 characters")]
@@ -60,7 +59,7 @@ namespace SchoolMedical_DataAccess.DTOModels
         public bool IsDescending { get; set; } = false;
     }
 
-    public class MedicineResponseDto
+    public class MedicineDetailResponseDto
     {
         public string Id { get; set; } = null!;
         public string Name { get; set; } = null!;

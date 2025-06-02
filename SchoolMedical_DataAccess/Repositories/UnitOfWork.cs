@@ -1,4 +1,5 @@
-﻿using SchoolMedical_DataAccess.Entities;
+﻿
+using SchoolMedical_DataAccess.Entities;
 using SchoolMedical_DataAccess.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -7,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace SchoolMedical_DataAccess.Repositories;
+
 
 public class UnitOfWork : IUnitOfWork
 {
@@ -49,14 +51,28 @@ public class UnitOfWork : IUnitOfWork
 	{
 		_dbContext.Database.BeginTransaction();
 	}
+	public async Task BeginTransactionAsync()
+	{
+		await _dbContext.Database.BeginTransactionAsync();
+	}
 
 	public void CommitTransaction()
 	{
 		_dbContext.Database.CommitTransaction();
+	}
+	public async Task CommitTransactionAsync()
+	{
+		await _dbContext.Database.CommitTransactionAsync();
 	}
 
 	public void RollBack()
 	{
 		_dbContext.Database.RollbackTransaction();
 	}
+	public async Task RollBackAsync()
+	{
+		await _dbContext.Database.RollbackTransactionAsync();
+	}
 }
+
+

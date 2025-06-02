@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 
 namespace SchoolMedical_DataAccess.Repositories;
 
+
 public class GenericRepository <T> : IGenericRepository<T> where T : class
 {
 	protected readonly SchoolhealthdbContext _context;
@@ -37,6 +38,11 @@ public class GenericRepository <T> : IGenericRepository<T> where T : class
 	public T? Find(Expression<Func<T, bool>> predicate)
 	{
 		return _dbSet.FirstOrDefault(predicate);
+	}
+
+	public async Task<T?> FindAsync(Expression<Func<T, bool>> predicate)
+	{
+		return await _dbSet.FirstOrDefaultAsync(predicate);
 	}
 
 	public T? GetById(object id)
@@ -113,5 +119,6 @@ public class GenericRepository <T> : IGenericRepository<T> where T : class
 		return query;
 	}
 
-
+	
 }
+

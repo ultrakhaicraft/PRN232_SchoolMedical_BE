@@ -3,6 +3,7 @@ using System.Collections.Generic;
 
 namespace SchoolMedical_DataAccess.Entities;
 
+//Missing Created Date & Updated Date (Ignore for now)
 public partial class Medicinerequest
 {
     public string Id { get; set; } = null!;
@@ -14,6 +15,8 @@ public partial class Medicinerequest
     public string? Description { get; set; }
 
     public DateTime DateSent { get; set; }
+
+    public string? Status { get; set; }
 
     public virtual Account ForStudentNavigation { get; set; } = null!;
 

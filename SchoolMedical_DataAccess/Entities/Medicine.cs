@@ -3,6 +3,7 @@ using System.Collections.Generic;
 
 namespace SchoolMedical_DataAccess.Entities;
 
+//Missing Created Date & Updated Date (Ignore for now)
 public partial class Medicine
 {
     public string Id { get; set; } = null!;

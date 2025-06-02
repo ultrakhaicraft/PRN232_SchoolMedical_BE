@@ -1,4 +1,5 @@
 ﻿using SchoolMedical_DataAccess.DTOModels;
+using SchoolMedical_DataAccess.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,5 +14,10 @@ namespace SchoolMedical_BusinessLogic.Interface;
 /// </summary>
 public interface IAccountService
 {
-	public Task<UserDetailModel> GetUserDetailByIdAsync(string userId);
+	public Task<AccountDetailModel> GetAccountDetailById(string userId);
+	public Task<PagingModel<AccountViewModel>> GetAllAccount();
+	public Task<string> CreateNewAccount(AccountCreateRequest request);
+	public Task UpdateAccount(string userId, AccountUpdateRequest request);
+	public Task SoftDeleteAccount(string userId);
+	public Task ChangeAccountStatus(string userId, AccountStatus status);
 }
