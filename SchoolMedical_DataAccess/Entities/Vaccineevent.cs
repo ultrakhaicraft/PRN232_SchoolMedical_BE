@@ -28,4 +28,6 @@ public partial class Vaccineevent
     public virtual Account CreatedByNavigation { get; set; } = null!;
 
     public virtual Account? Student { get; set; }
+
+    public virtual ICollection<StudentVaccinecheckup> StudentVaccinecheckups { get; set; } = new List<StudentVaccinecheckup>();
 }

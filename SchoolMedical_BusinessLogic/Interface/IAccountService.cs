@@ -15,9 +15,10 @@ namespace SchoolMedical_BusinessLogic.Interface;
 public interface IAccountService
 {
 	public Task<AccountDetailModel> GetAccountDetailById(string userId);
-	public Task<PagingModel<AccountViewModel>> GetAllAccount();
+	public Task<PagingModel<AccountViewModel>> GetAllAccount(AccountQuery request);
 	public Task<string> CreateNewAccount(AccountCreateRequest request);
 	public Task UpdateAccount(string userId, AccountUpdateRequest request);
 	public Task SoftDeleteAccount(string userId);
 	public Task ChangeAccountStatus(string userId, AccountStatus status);
+
 }

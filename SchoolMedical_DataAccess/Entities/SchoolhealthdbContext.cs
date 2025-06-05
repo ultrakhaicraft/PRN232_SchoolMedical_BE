@@ -27,6 +27,10 @@ public partial class SchoolhealthdbContext : DbContext
 
     public virtual DbSet<Medicinerequest> Medicinerequests { get; set; }
 
+    public virtual DbSet<StudentHealthcheckup> StudentHealthcheckups { get; set; }
+
+    public virtual DbSet<StudentVaccinecheckup> StudentVaccinecheckups { get; set; }
+
     public virtual DbSet<Studenthealthrecord> Studenthealthrecords { get; set; }
 
     public virtual DbSet<Treatmentrecord> Treatmentrecords { get; set; }
@@ -35,6 +39,9 @@ public partial class SchoolhealthdbContext : DbContext
 
     public virtual DbSet<Vaccinerecord> Vaccinerecords { get; set; }
 
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
+        => optionsBuilder.UseMySQL("server=localhost;port=3306;user=FPPTAdmin;password=AF3dmPPTn2!;database=schoolhealthdb;");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -194,6 +201,60 @@ public partial class SchoolhealthdbContext : DbContext
             entity.HasOne(d => d.RequestByNavigation).WithMany(p => p.MedicinerequestRequestByNavigations)
                 .HasForeignKey(d => d.RequestBy)
                 .HasConstraintName("FK_MedicineRequest_RequestBy");
+        });
+
+        modelBuilder.Entity<StudentHealthcheckup>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PRIMARY");
+
+            entity.ToTable("student_healthcheckup");
+
+            entity.HasIndex(e => e.EventId, "EventId");
+
+            entity.HasIndex(e => e.StudentId, "StudentId");
+
+            entity.Property(e => e.Id).HasMaxLength(50);
+            entity.Property(e => e.EventId).HasMaxLength(50);
+            entity.Property(e => e.ResultSummary).HasColumnType("text");
+            entity.Property(e => e.Status).HasMaxLength(50);
+            entity.Property(e => e.StudentId).HasMaxLength(50);
+
+            entity.HasOne(d => d.Event).WithMany(p => p.StudentHealthcheckups)
+                .HasForeignKey(d => d.EventId)
+                .OnDelete(DeleteBehavior.Cascade)
+                .HasConstraintName("student_healthcheckup_ibfk_1");
+
+            entity.HasOne(d => d.Student).WithMany(p => p.StudentHealthcheckups)
+                .HasForeignKey(d => d.StudentId)
+                .OnDelete(DeleteBehavior.Cascade)
+                .HasConstraintName("student_healthcheckup_ibfk_2");
+        });
+
+        modelBuilder.Entity<StudentVaccinecheckup>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PRIMARY");
+
+            entity.ToTable("student_vaccinecheckup");
+
+            entity.HasIndex(e => e.EventId, "EventId");
+
+            entity.HasIndex(e => e.StudentId, "StudentId");
+
+            entity.Property(e => e.Id).HasMaxLength(50);
+            entity.Property(e => e.EventId).HasMaxLength(50);
+            entity.Property(e => e.ResultSummary).HasColumnType("text");
+            entity.Property(e => e.Status).HasMaxLength(50);
+            entity.Property(e => e.StudentId).HasMaxLength(50);
+
+            entity.HasOne(d => d.Event).WithMany(p => p.StudentVaccinecheckups)
+                .HasForeignKey(d => d.EventId)
+                .OnDelete(DeleteBehavior.Cascade)
+                .HasConstraintName("student_vaccinecheckup_ibfk_1");
+
+            entity.HasOne(d => d.Student).WithMany(p => p.StudentVaccinecheckups)
+                .HasForeignKey(d => d.StudentId)
+                .OnDelete(DeleteBehavior.Cascade)
+                .HasConstraintName("student_vaccinecheckup_ibfk_2");
         });
 
         modelBuilder.Entity<Studenthealthrecord>(entity =>

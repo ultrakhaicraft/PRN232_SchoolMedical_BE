@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SchoolMedical_DataAccess.Enums;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -63,5 +64,14 @@ public class AccountUpdateRequest
 	public string? Address { get; set; } = null!;
 
 	public string? ParentId { get; set; }
+}
+
+public class AccountQuery
+{
+	public string? FullName { get; set; }
+	public AccountRole? Role { get; set; }
+	public AccountStatus? Status { get; set; } 
+	public int PageNumber { get; set; } = 1; // Default to first page
+	public int PageSize { get; set; } = 5; // Default page size
 }
 

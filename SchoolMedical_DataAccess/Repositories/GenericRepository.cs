@@ -23,16 +23,24 @@ public class GenericRepository <T> : IGenericRepository<T> where T : class
 	}
 
 	public IQueryable<T> Entities => _context.Set<T>();
-
-	public void Delete(object entity)
+	public IQueryable<T> GetAll()
 	{
-		_dbSet.Remove((T)entity);
+		return _dbSet.AsQueryable();
+	}
+	public async Task<IQueryable<T>> GetAllAsync()
+	{
+		return  _dbSet.AsQueryable();
 	}
 
-	public async Task DeleteAsync(object entity)
+	public async Task<T?> GetByIdAsync(object id)
 	{
-		_dbSet.Remove((T)entity);
-		await Task.CompletedTask;
+		return await _dbSet.FindAsync(id);
+	}
+
+	public T? GetById(object id)
+	{
+
+		return _dbSet.Find(id);
 	}
 
 	public T? Find(Expression<Func<T, bool>> predicate)
@@ -43,17 +51,6 @@ public class GenericRepository <T> : IGenericRepository<T> where T : class
 	public async Task<T?> FindAsync(Expression<Func<T, bool>> predicate)
 	{
 		return await _dbSet.FirstOrDefaultAsync(predicate);
-	}
-
-	public T? GetById(object id)
-	{
-
-		return _dbSet.Find(id);
-	}
-
-	public async Task<T?> GetByIdAsync(object id)
-	{
-		return await _dbSet.FindAsync(id);
 	}
 
 	public void Insert(T obj)
@@ -69,7 +66,29 @@ public class GenericRepository <T> : IGenericRepository<T> where T : class
 	{
 		_dbSet.AddRange(obj);
 	}
+	public async Task InsertRangeAsync(List<T> obj)
+	{
+		await _dbSet.AddRangeAsync(obj);
+	}
 
+	public void Update(T obj)
+	{
+		_context.Entry(obj).State = EntityState.Modified;
+	}
+	public Task UpdateAsync(T obj)
+	{
+		return Task.FromResult(_dbSet.Update(obj));
+	}
+	public void Delete(object entity)
+	{
+		_dbSet.Remove((T)entity);
+	}
+
+	public async Task DeleteAsync(object entity)
+	{
+		_dbSet.Remove((T)entity);
+		await Task.CompletedTask;
+	}
 
 
 	public void Save()
@@ -82,32 +101,6 @@ public class GenericRepository <T> : IGenericRepository<T> where T : class
 		await _context.SaveChangesAsync();
 	}
 
-	public void Update(T obj)
-	{
-		_context.Entry(obj).State = EntityState.Modified;
-	}
-
-
-
-	public Task UpdateAsync(T obj)
-	{
-		return Task.FromResult(_dbSet.Update(obj));
-	}
-
-	public async Task<IEnumerable<T>> GetAllAsync()
-	{
-		return await _dbSet.ToListAsync();
-	}
-
-	public IQueryable<T> GetAll()
-	{
-		return _dbSet;
-	}
-
-	public async Task InsertRangeAsync(List<T> obj)
-	{
-		await _dbSet.AddRangeAsync(obj);
-	}
 
 	public IQueryable<T> Include(params Expression<Func<T, object>>[] includeProperties)
 	{

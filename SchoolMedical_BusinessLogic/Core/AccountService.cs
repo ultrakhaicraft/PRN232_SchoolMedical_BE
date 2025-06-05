@@ -68,7 +68,7 @@ public class AccountService : IAccountService
 				ParentId = request.ParentId
 			};
 			
-			_unitOfWork.GetRepository<Account>().Update(account);
+			await _unitOfWork.GetRepository<Account>().InsertAsync(account);
 			await _unitOfWork.SaveAsync();
 			return account.Id;
 		}
@@ -116,7 +116,7 @@ public class AccountService : IAccountService
 		}
 	}
 
-	public async Task<PagingModel<AccountViewModel>> GetAllAccount()
+	public async Task<PagingModel<AccountViewModel>> GetAllAccount(AccountQuery request)
 	{
 		try
 		{
@@ -124,6 +124,30 @@ public class AccountService : IAccountService
 			if (query == null || !query.Any())
 			{
 				throw new AppException("No accounts found.");
+			}
+			// Filter Based on Status (using string-to-enum conversion)
+			if (!string.IsNullOrEmpty(request.Status.ToString()))
+			{
+				if (Enum.TryParse<AccountStatus>(request.Status.ToString(), true, out var parsedStatus))
+				{
+					query = query.Where(account => account.Status == parsedStatus.ToString());
+				}
+			}
+
+			// Filter Based on Role (using string-to-enum conversion)
+			if (!string.IsNullOrEmpty(request.Role.ToString()))
+			{
+				if (Enum.TryParse<AccountRole>(request.Role.ToString(), true, out var parsedRole))
+				{
+					query = query.Where(account => account.Role == parsedRole.ToString());
+				}
+			}
+
+			// Search Based on FullName (case-insensitive search using ToLower)
+			if (!string.IsNullOrEmpty(request.FullName))
+			{
+				string nameFilter = request.FullName.ToLower();
+				query = query.Where(account => account.FullName != null && account.FullName.ToLower().Contains(nameFilter));
 			}
 
 			var accountViews = query.Select(account => new AccountViewModel
@@ -135,7 +159,7 @@ public class AccountService : IAccountService
 				Status = account.Status,
 			});
 
-			var pagingModel = await PagingExtension.ToPagingModel<AccountViewModel>(accountViews.AsQueryable(), 1, 10); // Default page index and size
+			var pagingModel = await PagingExtension.ToPagingModel<AccountViewModel>(accountViews, request.PageNumber, request.PageSize); // Default page index and size
 
 			return new PagingModel<AccountViewModel>
 			{

@@ -43,6 +43,10 @@ public partial class Account
 
     public virtual Account? Parent { get; set; }
 
+    public virtual ICollection<StudentHealthcheckup> StudentHealthcheckups { get; set; } = new List<StudentHealthcheckup>();
+
+    public virtual ICollection<StudentVaccinecheckup> StudentVaccinecheckups { get; set; } = new List<StudentVaccinecheckup>();
+
     public virtual ICollection<Studenthealthrecord> StudenthealthrecordCreatedByNavigations { get; set; } = new List<Studenthealthrecord>();
 
     public virtual ICollection<Studenthealthrecord> StudenthealthrecordStudents { get; set; } = new List<Studenthealthrecord>();

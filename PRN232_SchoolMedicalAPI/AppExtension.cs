@@ -68,6 +68,7 @@ public static class AppExtension
 							new string[]{}
 						}
 					});
+			c.UseInlineDefinitionsForEnums(); 
 		});
 
 	}
