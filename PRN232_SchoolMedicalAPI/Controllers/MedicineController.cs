@@ -35,11 +35,11 @@ public class MedicineController : ControllerBase
         /// <summary>
         /// Get medicine details by ID
         /// </summary>
-        [HttpGet("get-detail/{id}")]
+        [HttpGet("get-detail")]
 		//[Authorize(Roles = "SchoolNurse, Admin, Manager")]
-		public async Task<IActionResult> GetMedicineById(string id)
+		public async Task<IActionResult> GetMedicineById(string medicineId)
         {
-        var medicine = await _medicineService.GetMedicineDetailByIdAsync(id);
+        var medicine = await _medicineService.GetMedicineDetailByIdAsync(medicineId);
         if (medicine == null)
         {
             throw new KeyNotFoundException("Medicine not found");
@@ -71,9 +71,9 @@ public class MedicineController : ControllerBase
         /// <summary>
         /// Update existing medicine
         /// </summary>
-        [HttpPut("update-medicine/{id}")]
+        [HttpPut("update-medicine")]
 		//[Authorize(Roles ="SchoolNurse, Admin, Manager")]
-		public async Task<IActionResult> UpdateMedicine(string id, [FromBody] UpdateMedicineRequestDto request)
+		public async Task<IActionResult> UpdateMedicine(string medicineId, [FromBody] UpdateMedicineRequestDto request)
         {
        
         if (!ModelState.IsValid)
@@ -82,7 +82,7 @@ public class MedicineController : ControllerBase
         }
 
         var currentUserId = User.Claims.GetUserIdFromJwtToken();
-		var medicine = await _medicineService.UpdateMedicineAsync(request,id);
+		var medicine = await _medicineService.UpdateMedicineAsync(request, medicineId);
 		HttpContext.Items["CustomMessage"] = "Medicine updated successfully";
 		return Ok(medicine);
         }
@@ -90,11 +90,11 @@ public class MedicineController : ControllerBase
         /// <summary>
         /// Soft delete medicine (permanent deletion)
         /// </summary>
-        [HttpDelete("delete-medicine/{id}")]
+        [HttpDelete("delete-medicine")]
 		//[Authorize(Roles ="SchoolNurse, Admin, Manager")]
-		public async Task<IActionResult> DeleteMedicine(string id)
+		public async Task<IActionResult> DeleteMedicine(string medicineId)
         {
-        var result = await _medicineService.SoftDeleteMedicineAsync(id);   
+        var result = await _medicineService.SoftDeleteMedicineAsync(medicineId);   
 			HttpContext.Items["CustomMessage"] = "Medicine deleted successfully";
 			return Ok(result);
         }

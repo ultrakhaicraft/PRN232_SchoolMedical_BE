@@ -10,7 +10,7 @@ namespace SchoolMedical_BusinessLogic.Interface;
 
 public interface IStudentHealthRecordService
 {
-	Task<PagingModel<StudentHealthRecordViewModel>> GetAllRecords();
+	Task<PagingModel<StudentHealthRecordViewModel>> GetAllRecords(StudentHealthRecordQuery recordQuery);
 	Task<StudentHealthRecordDetailModel> GetRecordByIdAsync(string recordId);
 	Task<string> CreateRecordAsync(StudentHealthRecordCreateModel record, string createdBy);
 	Task UpdateRecordAsync(StudentHealthRecordUpdateModel record, string recordI, string createdBy);

@@ -121,10 +121,7 @@ public class AccountService : IAccountService
 		try
 		{
 			var query = await _unitOfWork.GetRepository<Account>().GetAllAsync();
-			if (query == null || !query.Any())
-			{
-				throw new AppException("No accounts found.");
-			}
+			
 			// Filter Based on Status (using string-to-enum conversion)
 			if (!string.IsNullOrEmpty(request.Status.ToString()))
 			{
@@ -148,6 +145,11 @@ public class AccountService : IAccountService
 			{
 				string nameFilter = request.FullName.ToLower();
 				query = query.Where(account => account.FullName != null && account.FullName.ToLower().Contains(nameFilter));
+			}
+
+			if (query == null || !query.Any())
+			{
+				throw new AppException("No accounts found.");
 			}
 
 			var accountViews = query.Select(account => new AccountViewModel

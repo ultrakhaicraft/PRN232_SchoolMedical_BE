@@ -1,13 +1,16 @@
-﻿using SchoolMedical_BusinessLogic.Interface;
+﻿using Org.BouncyCastle.Asn1.Ocsp;
+using SchoolMedical_BusinessLogic.Interface;
 using SchoolMedical_BusinessLogic.Utility;
 using SchoolMedical_DataAccess.DTOModels;
 using SchoolMedical_DataAccess.Entities;
+using SchoolMedical_DataAccess.Enums;
 using SchoolMedical_DataAccess.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace SchoolMedical_BusinessLogic.Core
 {
@@ -72,16 +75,35 @@ namespace SchoolMedical_BusinessLogic.Core
 			}
 		}
 
-		public async Task<PagingModel<StudentHealthRecordViewModel>> GetAllRecords()
+		public async Task<PagingModel<StudentHealthRecordViewModel>> GetAllRecords(StudentHealthRecordQuery recordQuery)
 		{
 			try
 			{
 				await Task.Delay(100);
 				var records = _unitOfWork.GetRepository<Studenthealthrecord>().GetAll();
-				if(records == null || !records.Any())
+				
+
+				//Search by student name by accessing Student Object
+				if (!String.IsNullOrEmpty(recordQuery.StudentName))
+				{
+					records = records.Where(r => r.Student.FullName.Contains(recordQuery.StudentName, StringComparison.OrdinalIgnoreCase));
+				}
+
+				//Filter by status
+				// Filter Based on Status (using string-to-enum conversion)
+				if (!string.IsNullOrEmpty(recordQuery.Status.ToString()))
+				{
+					if (Enum.TryParse<AccountStatus>(recordQuery.Status.ToString(), true, out var parsedStatus))
+					{
+						records = records.Where(account => account.Status == parsedStatus.ToString());
+					}
+				}
+
+				if (records == null || !records.Any())
 				{
 					throw new Exception("No student health records found.");
 				}
+
 				var recordResponse = records.Select(record => new StudentHealthRecordViewModel
 				{
 					Id = record.Id,
@@ -91,7 +113,7 @@ namespace SchoolMedical_BusinessLogic.Core
 					Status = record.Status
 				});
 
-				var pagingModel = await PagingExtension.ToPagingModel<StudentHealthRecordViewModel>(recordResponse.AsQueryable(), 1, 10);
+				var pagingModel = await PagingExtension.ToPagingModel<StudentHealthRecordViewModel>(recordResponse, recordQuery.PageNumber, recordQuery.PageNumber);
 
 				return new PagingModel<StudentHealthRecordViewModel>
 				{

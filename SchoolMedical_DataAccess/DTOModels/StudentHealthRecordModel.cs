@@ -1,4 +1,5 @@
 ﻿using SchoolMedical_DataAccess.Entities;
+using SchoolMedical_DataAccess.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -90,4 +91,13 @@ public class StudentHealthRecordUpdateModel
 	public string? Hearing { get; set; }
 
 	public string? Status { get; set; }
+}
+
+
+public class StudentHealthRecordQuery
+{
+	public string? StudentName { get; set; }
+	public RecordStatus? Status { get; set; }
+	public int PageNumber { get; set; } = 1;
+	public int PageSize { get; set; } = 10;
 }
