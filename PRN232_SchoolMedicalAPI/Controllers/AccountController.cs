@@ -17,15 +17,15 @@ public class AccountController : ControllerBase
 	}
 
 	[HttpGet("get-all")]
-	public async Task<IActionResult> GetAllAccount()
+	public async Task<IActionResult> GetAllAccount([FromQuery] AccountQuery request)
 	{
 
-		var accounts = await _accountService.GetAllAccount();
+		var accounts = await _accountService.GetAllAccount(request);
 		HttpContext.Items["CustomMessage"] = "Login successfully, granting token";
 		return Ok(accounts);
 
 	}
-	[HttpGet("get-detail/{id}")]
+	[HttpGet("get-detail")]
 	public async Task<IActionResult> GetAccountDetailByID([FromQuery] string userId)
 	{
 		var accounts = await _accountService.GetAccountDetailById(userId);
@@ -41,7 +41,7 @@ public class AccountController : ControllerBase
 		return Ok(id);
 	}
 
-	[HttpPut("update-account/{id}")]
+	[HttpPut("update-account")]
 	public async Task<IActionResult> UpdateAccount([FromBody] AccountUpdateRequest request, string userId)
 	{
 		await _accountService.UpdateAccount(userId, request);
@@ -49,7 +49,7 @@ public class AccountController : ControllerBase
 		return Ok(userId);
 	}
 
-	[HttpDelete("delete-account/{id}")]
+	[HttpDelete("delete-account")]
 	public async Task<IActionResult> SoftDeleteAccount([FromQuery] string userId)
 	{
 		await _accountService.SoftDeleteAccount(userId);
@@ -57,7 +57,7 @@ public class AccountController : ControllerBase
 		return Ok(userId);
 	}
 
-	[HttpPatch("change-status/{id}")]
+	[HttpPatch("change-status")]
 	public async Task<IActionResult> ChangeAccountStatus([FromQuery] string userId, [FromQuery] AccountStatus status )
 	{
 		await _accountService.ChangeAccountStatus(userId, status);
