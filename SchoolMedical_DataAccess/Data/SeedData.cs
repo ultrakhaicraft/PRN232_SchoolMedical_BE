@@ -1,5 +1,8 @@
-﻿
+﻿using BCrypt.Net;
 using Microsoft.EntityFrameworkCore;
+using Org.BouncyCastle.Crypto.Generators;
+using SchoolMedical_DataAccess.Entities;
+using SchoolMedical_DataAccess.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +10,6 @@ using System.Threading.Tasks;
 
 namespace SchoolMedical_DataAccess.Data
 {
-    /*
     public static class SeedData
     {
         private static readonly Random _random = new Random();
@@ -59,10 +61,11 @@ namespace SchoolMedical_DataAccess.Data
                 Id = "admin-001",
                 FullName = "Dr. Sarah Johnson",
                 Email = "admin@school.edu",
-                Password = "hashed_password_123", // In real app, use proper hashing
+                Password = BCrypt.Net.BCrypt.HashPassword("123456"),
                 PhoneNumber = "555-0101",
                 Role = "Admin",
-                Address = "123 School Admin Building"
+                Address = "123 School Admin Building",
+                Status = AccountStatus.Active.ToString()
             });
 
             accounts.Add(new Account
@@ -70,10 +73,11 @@ namespace SchoolMedical_DataAccess.Data
                 Id = "admin-002",
                 FullName = "Dr. Michael Chen",
                 Email = "michael.chen@school.edu",
-                Password = "hashed_password_456",
+                Password = BCrypt.Net.BCrypt.HashPassword("123456"),
                 PhoneNumber = "555-0102",
                 Role = "Admin",
-                Address = "124 Medical Office"
+                Address = "124 Medical Office",
+                Status = AccountStatus.Active.ToString()
             });
 
             // Nurse accounts
@@ -82,10 +86,11 @@ namespace SchoolMedical_DataAccess.Data
                 Id = "nurse-001",
                 FullName = "Nurse Emily Wilson",
                 Email = "emily.wilson@school.edu",
-                Password = "hashed_password_789",
+                Password = BCrypt.Net.BCrypt.HashPassword("123456"),
                 PhoneNumber = "555-0201",
                 Role = "Nurse",
-                Address = "Health Center Room 101"
+                Address = "Health Center Room 101",
+                Status = AccountStatus.Active.ToString()
             });
 
             accounts.Add(new Account
@@ -93,10 +98,11 @@ namespace SchoolMedical_DataAccess.Data
                 Id = "nurse-002",
                 FullName = "Nurse Robert Davis",
                 Email = "robert.davis@school.edu",
-                Password = "hashed_password_012",
+                Password = BCrypt.Net.BCrypt.HashPassword("123456"),
                 PhoneNumber = "555-0202",
                 Role = "Nurse",
-                Address = "Health Center Room 102"
+                Address = "Health Center Room 102",
+                Status = AccountStatus.Active.ToString()
             });
 
             // Teacher accounts
@@ -117,10 +123,11 @@ namespace SchoolMedical_DataAccess.Data
                     Id = $"teacher-{(i + 1):D3}",
                     FullName = teacherData[i].Name,
                     Email = teacherData[i].Email,
-                    Password = $"hashed_password_{300 + i}",
+                    Password = BCrypt.Net.BCrypt.HashPassword("123456"),
                     PhoneNumber = $"555-0{300 + i}",
                     Role = "Teacher",
-                    Address = $"Classroom Building {i + 1}"
+                    Address = $"Classroom Building {i + 1}",
+                    Status = AccountStatus.Active.ToString()
                 });
             }
 
@@ -148,10 +155,11 @@ namespace SchoolMedical_DataAccess.Data
                     Id = $"parent-{(i + 1):D3}",
                     FullName = parentData[i].Name,
                     Email = parentData[i].Email,
-                    Password = $"hashed_password_{400 + i}",
+                    Password = BCrypt.Net.BCrypt.HashPassword("123456"),
                     PhoneNumber = $"555-0{400 + i}",
                     Role = "Parent",
-                    Address = $"{100 + i} Main Street, City"
+                    Address = $"{100 + i} Main Street, City",
+                    Status = AccountStatus.Active.ToString()
                 });
             }
 
@@ -190,10 +198,11 @@ namespace SchoolMedical_DataAccess.Data
                     ParentId = parentId,
                     FullName = studentData[i].Name,
                     Email = studentData[i].Email,
-                    Password = $"hashed_password_{500 + i}",
+                    Password = BCrypt.Net.BCrypt.HashPassword("123456"),
                     PhoneNumber = $"555-0{500 + i}",
                     Role = "Student",
-                    Address = parentId != null ? $"{100 + i} Main Street, City" : $"{200 + i} Dormitory Lane"
+                    Address = parentId != null ? $"{100 + i} Main Street, City" : $"{200 + i} Dormitory Lane",
+                    Status = AccountStatus.Active.ToString()
                 });
             }
 
@@ -234,7 +243,7 @@ namespace SchoolMedical_DataAccess.Data
                 Amount = med.Amount,
                 IsAvailable = _random.Next(0, 10) > 1, // 90% chance of being available
                 CreatedBy = creatorIds[_random.Next(creatorIds.Count)],
-                IsDeleted = _random.Next(0, 20) == 0 // 5% chance of being deleted
+                IsDeleted = _random.Next(0, 20) == 0, // 5% chance of being deleted
             }).ToList();
 
             context.Medicines.AddRange(medicineEntities);
@@ -269,7 +278,7 @@ namespace SchoolMedical_DataAccess.Data
                 Amount = supply.Amount,
                 IsAvailable = _random.Next(0, 10) > 0, // 95% chance of being available
                 CreatedBy = creatorIds[_random.Next(creatorIds.Count)],
-                IsDeleted = _random.Next(0, 25) == 0 // 4% chance of being deleted
+                IsDeleted = _random.Next(0, 25) == 0, // 4% chance of being deleted
             }).ToList();
 
             context.Medicalsupplies.AddRange(supplyEntities);
@@ -306,7 +315,14 @@ namespace SchoolMedical_DataAccess.Data
                     RequestBy = requesters[_random.Next(requesters.Count)],
                     ForStudent = studentIds[_random.Next(studentIds.Count)],
                     Description = descriptions[_random.Next(descriptions.Length)],
-                    DateSent = DateTime.Now.AddDays(-_random.Next(0, 30)).AddHours(-_random.Next(0, 24))
+                    DateSent = DateTime.Now.AddDays(-_random.Next(0, 30)).AddHours(-_random.Next(0, 24)),
+                    Status = _random.Next(0, 4) switch
+                    {
+                        0 => RequestStatus.Pending.ToString(),
+                        1 => RequestStatus.Approved.ToString(),
+                        2 => RequestStatus.Rejected.ToString(),
+                        _ => RequestStatus.Deleted.ToString()
+                    }
                 });
             }
 
@@ -349,7 +365,8 @@ namespace SchoolMedical_DataAccess.Data
                 Allergies = allergies[_random.Next(allergies.Length)],
                 ChronicDiseases = chronicDiseases[_random.Next(chronicDiseases.Length)],
                 Vision = visionStatus[_random.Next(visionStatus.Length)],
-                Hearing = hearingStatus[_random.Next(hearingStatus.Length)]
+                Hearing = hearingStatus[_random.Next(hearingStatus.Length)],
+                Status = RecordStatus.Active.ToString()
             }).ToList();
 
             context.Studenthealthrecords.AddRange(healthRecords);
@@ -392,7 +409,8 @@ namespace SchoolMedical_DataAccess.Data
                     HandleBy = handlers[_random.Next(handlers.Count)],
                     IncidentType = incidentTypes[_random.Next(incidentTypes.Length)],
                     Description = descriptions[_random.Next(descriptions.Length)],
-                    DateOccurred = DateTime.Now.AddDays(-_random.Next(0, 60)).AddHours(-_random.Next(0, 24))
+                    DateOccurred = DateTime.Now.AddDays(-_random.Next(0, 60)).AddHours(-_random.Next(0, 24)),
+                    Status = RecordStatus.Active.ToString()
                 });
             }
 
@@ -437,7 +455,8 @@ namespace SchoolMedical_DataAccess.Data
                     StudentHealthRecordId = selectedHealthRecord.Id,
                     RecordDate = DateTime.Now.AddDays(-_random.Next(0, 90)).AddHours(-_random.Next(0, 24)),
                     Treatment = treatments[_random.Next(treatments.Length)],
-                    Description = treatmentDescriptions[_random.Next(treatmentDescriptions.Length)]
+                    Description = treatmentDescriptions[_random.Next(treatmentDescriptions.Length)],
+                    Status = RecordStatus.Active.ToString()
                 });
             }
 
@@ -480,7 +499,8 @@ namespace SchoolMedical_DataAccess.Data
                     StudentHealthRecordId = selectedHealthRecord.Id,
                     RecordDate = DateTime.Now.AddDays(-_random.Next(30, 365)).AddHours(-_random.Next(0, 24)),
                     Vaccine = vaccines[_random.Next(vaccines.Length)],
-                    Description = vaccineDescriptions[_random.Next(vaccineDescriptions.Length)]
+                    Description = vaccineDescriptions[_random.Next(vaccineDescriptions.Length)],
+                    Status = RecordStatus.Active.ToString()
                 });
             }
 
@@ -521,7 +541,8 @@ namespace SchoolMedical_DataAccess.Data
                     Content = eventTemplate.Content,
                     DateOccurred = eventDate,
                     DateSignupStart = eventDate.AddDays(-14),
-                    DateSignupEnd = eventDate.AddDays(-1)
+                    DateSignupEnd = eventDate.AddDays(-1),
+                    Status = GetEventStatus(eventDate)
                 });
             }
 
@@ -561,14 +582,34 @@ namespace SchoolMedical_DataAccess.Data
                     Content = eventTemplate.Content,
                     DateOccurred = eventDate,
                     DateSignupStart = eventDate.AddDays(-21),
-                    DateSignupEnd = eventDate.AddDays(-3)
+                    DateSignupEnd = eventDate.AddDays(-3),
+                    Status = GetEventStatus(eventDate)
                 });
             }
 
             context.Vaccineevents.AddRange(vaccineEvents);
             await context.SaveChangesAsync();
         }
-    }
 
-    */
+        private static string GetEventStatus(DateTime eventDate)
+        {
+            var now = DateTime.Now;
+            if (eventDate < now)
+            {
+                return EventStatus.Completed.ToString();
+            }
+            else if (eventDate.AddDays(-7) <= now && now <= eventDate)
+            {
+                return EventStatus.Ongoing.ToString();
+            }
+            else if (eventDate > now)
+            {
+                return EventStatus.Upcoming.ToString();
+            }
+            else
+            {
+                return EventStatus.Cancelled.ToString();
+            }
+        }
+    }
 }

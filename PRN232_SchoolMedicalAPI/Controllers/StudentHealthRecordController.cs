@@ -9,9 +9,8 @@ namespace PRN232_SchoolMedicalAPI.Controllers;
 [ApiController]
 [Route("api/student-health-record")]
 //[Authorize]
-public class StudentHealthRecordController : Controller
+public class StudentHealthRecordController : ControllerBase
 {
-
 	private readonly IStudentHealthRecordService _studentHealthRecordService;
 
 	public StudentHealthRecordController(IStudentHealthRecordService studentHealthRecordService)
@@ -19,45 +18,73 @@ public class StudentHealthRecordController : Controller
 		_studentHealthRecordService = studentHealthRecordService;
 	}
 
-	[HttpGet("get-all")]
-	public async Task<IActionResult> GetAllRecord([FromQuery] StudentHealthRecordQuery request)
+	/// <summary>
+	/// Get paginated list of student health records with filtering and sorting
+	/// </summary>
+	[HttpGet]
+	public async Task<IActionResult> GetStudentHealthRecords([FromQuery] StudentHealthRecordQuery request)
 	{
-
 		var records = await _studentHealthRecordService.GetAllRecords(request);
 		HttpContext.Items["CustomMessage"] = "Get all records successfully";
 		return Ok(records);
-
 	}
-	[HttpGet("get-detail")]
-	public async Task<IActionResult> GetRecordDetailByID([FromQuery] string recordId)
+
+	/// <summary>
+	/// Get student health record details by ID
+	/// </summary>
+	[HttpGet("{id}")]
+	public async Task<IActionResult> GetStudentHealthRecordById(string id)
 	{
-		var record = await _studentHealthRecordService.GetRecordByIdAsync(recordId);
+		var record = await _studentHealthRecordService.GetRecordByIdAsync(id);
+		if (record == null)
+		{
+			throw new KeyNotFoundException("Student health record not found");
+		}
 		HttpContext.Items["CustomMessage"] = "Displaying the record details";
 		return Ok(record);
 	}
 
-	[HttpPost("create-record")]
-	public async Task<IActionResult> CreateRecord([FromBody] StudentHealthRecordCreateModel record)
+	/// <summary>
+	/// Create new student health record
+	/// </summary>
+	[HttpPost]
+	public async Task<IActionResult> CreateStudentHealthRecord([FromBody] StudentHealthRecordCreateModel record)
 	{
+		if (!ModelState.IsValid)
+		{
+			return BadRequest(ModelState);
+		}
+
 		var createdBy = User.Claims.GetUserIdFromJwtToken() ?? "Unknown";
 		var recordId = await _studentHealthRecordService.CreateRecordAsync(record, createdBy);
 		HttpContext.Items["CustomMessage"] = "Record created successfully";
-		return CreatedAtAction(nameof(GetRecordDetailByID), new { recordId }, recordId);
+		return CreatedAtAction(nameof(GetStudentHealthRecordById), new { id = recordId }, recordId);
 	}
 
-	[HttpPut("update-record")]
-	public async Task<IActionResult> UpdateRecord([FromBody] StudentHealthRecordUpdateModel record, [FromQuery] string recordId)
+	/// <summary>
+	/// Update existing student health record
+	/// </summary>
+	[HttpPut("{id}")]
+	public async Task<IActionResult> UpdateStudentHealthRecord(string id, [FromBody] StudentHealthRecordUpdateModel record)
 	{
+		if (!ModelState.IsValid)
+		{
+			return BadRequest(ModelState);
+		}
+
 		var createdBy = User.Claims.GetUserIdFromJwtToken() ?? "Unknown";
-		await _studentHealthRecordService.UpdateRecordAsync(record, recordId, createdBy);
+		await _studentHealthRecordService.UpdateRecordAsync(record, id, createdBy);
 		HttpContext.Items["CustomMessage"] = "Record updated successfully";
 		return Ok();
 	}
 
-	[HttpDelete("delete-record")]
-	public async Task<IActionResult> DeleteRecord([FromQuery] string recordId)
+	/// <summary>
+	/// Delete student health record
+	/// </summary>
+	[HttpDelete("{id}")]
+	public async Task<IActionResult> DeleteStudentHealthRecord(string id)
 	{
-		await _studentHealthRecordService.DeleteRecordAsync(recordId);
+		await _studentHealthRecordService.DeleteRecordAsync(id);
 		HttpContext.Items["CustomMessage"] = "Record deleted successfully";
 		return Ok();
 	}

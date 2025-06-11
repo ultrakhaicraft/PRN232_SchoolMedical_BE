@@ -16,54 +16,83 @@ public class AccountController : ControllerBase
 		_accountService = accountService;
 	}
 
-	[HttpGet("get-all")]
-	public async Task<IActionResult> GetAllAccount([FromQuery] AccountQuery request)
+	/// <summary>
+	/// Get paginated list of accounts with filtering and sorting
+	/// </summary>
+	[HttpGet]
+	public async Task<IActionResult> GetAccounts([FromQuery] AccountQuery request)
 	{
-
 		var accounts = await _accountService.GetAllAccount(request);
-		HttpContext.Items["CustomMessage"] = "Login successfully, granting token";
-		return Ok(accounts);
-
-	}
-	[HttpGet("get-detail")]
-	public async Task<IActionResult> GetAccountDetailByID([FromQuery] string userId)
-	{
-		var accounts = await _accountService.GetAccountDetailById(userId);
-		HttpContext.Items["CustomMessage"] = "Login successfully, granting token";
+		HttpContext.Items["CustomMessage"] = "Get all accounts successfully";
 		return Ok(accounts);
 	}
 
-	[HttpPost("create-account")]
-	public async Task<IActionResult> CreateNewAccount([FromBody] AccountCreateRequest request )
+	/// <summary>
+	/// Get account details by ID
+	/// </summary>
+	[HttpGet("{id}")]
+	public async Task<IActionResult> GetAccountById(string id)
 	{
+		var account = await _accountService.GetAccountDetailById(id);
+		if (account == null)
+		{
+			throw new KeyNotFoundException("Account not found");
+		}
+		HttpContext.Items["CustomMessage"] = "Account found successfully";
+		return Ok(account);
+	}
+
+	/// <summary>
+	/// Create new account
+	/// </summary>
+	[HttpPost]
+	public async Task<IActionResult> CreateAccount([FromBody] AccountCreateRequest request)
+	{
+		if (!ModelState.IsValid)
+		{
+			return BadRequest(ModelState);
+		}
+
 		string id = await _accountService.CreateNewAccount(request);
-		HttpContext.Items["CustomMessage"] = "Account created successfully!";
-		return Ok(id);
+		HttpContext.Items["CustomMessage"] = "Account created successfully";
+		return CreatedAtAction(nameof(GetAccountById), new { id }, id);
 	}
 
-	[HttpPut("update-account")]
-	public async Task<IActionResult> UpdateAccount([FromBody] AccountUpdateRequest request, string userId)
+	/// <summary>
+	/// Update existing account
+	/// </summary>
+	[HttpPut("{id}")]
+	public async Task<IActionResult> UpdateAccount(string id, [FromBody] AccountUpdateRequest request)
 	{
-		await _accountService.UpdateAccount(userId, request);
-		HttpContext.Items["CustomMessage"] = "Account updated successfully!";
-		return Ok(userId);
+		if (!ModelState.IsValid)
+		{
+			return BadRequest(ModelState);
+		}
+
+		await _accountService.UpdateAccount(id, request);
+		HttpContext.Items["CustomMessage"] = "Account updated successfully";
+		return Ok();
 	}
 
-	[HttpDelete("delete-account")]
-	public async Task<IActionResult> SoftDeleteAccount([FromQuery] string userId)
+	/// <summary>
+	/// Soft delete account
+	/// </summary>
+	[HttpDelete("{id}")]
+	public async Task<IActionResult> DeleteAccount(string id)
 	{
-		await _accountService.SoftDeleteAccount(userId);
-		HttpContext.Items["CustomMessage"] = "Account deleted successfully!";
-		return Ok(userId);
+		await _accountService.SoftDeleteAccount(id);
+		HttpContext.Items["CustomMessage"] = "Account deleted successfully";
+		return Ok();
 	}
 
-	[HttpPatch("change-status")]
-	public async Task<IActionResult> ChangeAccountStatus([FromQuery] string userId, [FromQuery] AccountStatus status )
+	/// <summary>
+	/// Change account status
+	/// </summary>
+	[HttpPatch("{id}/status")]
+	public async Task<IActionResult> ChangeAccountStatus(string id, [FromQuery] AccountStatus status)
 	{
-		await _accountService.ChangeAccountStatus(userId, status);
-		HttpContext.Items["CustomMessage"] = "Account status changed successfully!";
-		return Ok(userId);
+		await _accountService.ChangeAccountStatus(id, status);
+		HttpContext.Items["CustomMessage"] = "Account status changed successfully";
+		return Ok();
 	}
-
-	
 }
