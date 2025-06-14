@@ -65,12 +65,5 @@ namespace SchoolMedical_DataAccess.DTOModels;
 	public string? Status { get; set; }
 }
 
-        public string StudentName { get; set; } = null!;
+       
 
-        public string? IncidentType { get; set; }
-
-        public DateTime DateOccurred { get; set; }
-
-        public string? Status { get; set; }
-    }
-}

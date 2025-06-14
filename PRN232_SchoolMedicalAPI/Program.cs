@@ -41,11 +41,13 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 
+    /*
     using var scope = app.Services.CreateScope(); 
     var context = scope.ServiceProvider.GetRequiredService<SchoolhealthdbContext>();
 
     await context.Database.EnsureCreatedAsync();
     await SeedData.SeedAsync(context);
+    */
 
 }
 app.UseCors("AllowAllOrigins");
