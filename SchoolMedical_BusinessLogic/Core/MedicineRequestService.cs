@@ -3,12 +3,7 @@ using SchoolMedical_BusinessLogic.Interface;
 using SchoolMedical_DataAccess.DTOModels;
 using SchoolMedical_DataAccess.Entities;
 using SchoolMedical_DataAccess.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SchoolMedical_BusinessLogic.Core
 {
