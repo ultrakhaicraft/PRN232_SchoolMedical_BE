@@ -38,7 +38,22 @@ public class StudentHealthRecordController : ControllerBase
 		var record = await _studentHealthRecordService.GetRecordByIdAsync(id);
 		if (record == null)
 		{
-			throw new KeyNotFoundException("Student health record not found");
+			throw new KeyNotFoundException("Student health record not foundby this ID");
+		}
+		HttpContext.Items["CustomMessage"] = "Displaying the record details";
+		return Ok(record);
+	}
+
+	/// <summary>
+	/// Get student health record details by ID
+	/// </summary>
+	[HttpGet("from-student/{studentId}")]
+	public async Task<IActionResult> GetStudentHealthRecordFromStudentId(string studentId)
+	{
+		var record = await _studentHealthRecordService.GetRecordFromStudentIdAsync(studentId);
+		if (record == null)
+		{
+			throw new KeyNotFoundException("Student health record not foundby this ID");
 		}
 		HttpContext.Items["CustomMessage"] = "Displaying the record details";
 		return Ok(record);

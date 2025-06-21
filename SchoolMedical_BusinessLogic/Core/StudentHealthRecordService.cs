@@ -187,6 +187,62 @@ namespace SchoolMedical_BusinessLogic.Core
 			}
 		}
 
+		public async Task<StudentHealthRecordDetailModel> GetRecordFromStudentIdAsync(string studentId)
+		{
+			try
+			{
+				await Task.Delay(100);
+				var record = _unitOfWork.GetRepository<Studenthealthrecord>().Find(x=>x.StudentId.Equals(studentId));
+
+				if (record == null)
+				{
+					throw new Exception("Student health record not found.");
+				}
+
+				var recordResponse = new StudentHealthRecordDetailModel
+				{
+					Id = record.Id,
+					StudentId = record.StudentId,
+					StudentName = record.Student.FullName, // Assuming Student has a Name property
+					CreatedBy = record.CreatedByNavigation.FullName, // Assuming CreatedByNavigation has a Name property
+					Height = record.Height,
+					Allergies = record.Allergies,
+					ChronicDiseases = record.ChronicDiseases,
+					Vision = record.Vision,
+					Hearing = record.Hearing,
+					Status = record.Status,
+					vaccineRecordViewModels = record.Vaccinerecords.Select(v => new VaccineRecordViewModel
+					{
+						Id = v.Id,
+						StudentId = v.StudentId,
+						StudentName = v.Student.FullName, // Assuming Student has a FullName property
+						RecordDate = v.RecordDate,
+						Vaccine = v.Vaccine,
+						Status = v.Status
+					}).ToList(),
+					treatmentRecordViewModels = record.Treatmentrecords.Select(t => new TreatmentRecordViewModel
+					{
+						Id = t.Id,
+						StudentId = t.StudentId,
+						StudentName = t.Student.FullName, // Assuming Student has a FullName property
+						RecordDate = t.RecordDate,
+						Treatment = t.Treatment,
+						Status = t.Status
+					}).ToList()
+
+				};
+
+				return recordResponse;
+
+
+			}
+			catch (Exception e)
+			{
+				Console.WriteLine("Error creating student health record: " + e.Message);
+				throw new Exception("An error occurred while creating the student health record.", e);
+			}
+		}
+
 		public async Task UpdateRecordAsync(StudentHealthRecordUpdateModel record, string recordId,string createdBy)
 		{
 			try

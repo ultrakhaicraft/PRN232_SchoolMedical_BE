@@ -15,7 +15,16 @@ public class LoginRequest
 	public string? Password { get; set; }
 }
 
-public class RegisterRequest
+public class LoginResponse
+{
+	public JWTToken? Token { get; set; }
+	public string? FullName { get; set; }
+	public string? Email { get; set; }
+	public string? Role { get; set; }
+
+}
+
+	public class RegisterRequest
 {
 	[Required]
 	public string? FullName { get; set; }

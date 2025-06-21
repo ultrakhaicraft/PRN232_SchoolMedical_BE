@@ -36,7 +36,19 @@ public class AccountController : ControllerBase
 		var account = await _accountService.GetAccountDetailById(id);
 		if (account == null)
 		{
-			throw new KeyNotFoundException("Account not found");
+			return NotFound("Account not found");
+		}
+		HttpContext.Items["CustomMessage"] = "Account found successfully";
+		return Ok(account);
+	}
+
+	[HttpGet("{id}/student")]
+	public async Task<IActionResult> GetStudentByParentId(string parentId)
+	{
+		var account = await _accountService.getStudentDetail(parentId);
+		if (account == null)
+		{
+			return NotFound("Account not found");
 		}
 		HttpContext.Items["CustomMessage"] = "Account found successfully";
 		return Ok(account);
