@@ -12,6 +12,7 @@ public interface IStudentHealthRecordService
 {
 	Task<PagingModel<StudentHealthRecordViewModel>> GetAllRecords(StudentHealthRecordQuery recordQuery);
 	Task<StudentHealthRecordDetailModel> GetRecordByIdAsync(string recordId);
+	Task<StudentHealthRecordDetailModel> GetRecordFromStudentIdAsync(string studentId);
 	Task<string> CreateRecordAsync(StudentHealthRecordCreateModel record, string createdBy);
 	Task UpdateRecordAsync(StudentHealthRecordUpdateModel record, string recordI, string createdBy);
 	Task DeleteRecordAsync(string recordId);

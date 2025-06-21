@@ -4,8 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SchoolMedical_DataAccess.DTOModels
-{
+namespace SchoolMedical_DataAccess.DTOModels;
+
+
     public class IncidentRecordDetailModel
     {
         public string Id { get; set; } = null!;
@@ -58,13 +59,11 @@ namespace SchoolMedical_DataAccess.DTOModels
         public string Id { get; set; } = null!;
 
         public string StudentId { get; set; } = null!;
-
-        public string StudentName { get; set; } = null!;
-
-        public string? IncidentType { get; set; }
-
-        public DateTime DateOccurred { get; set; }
-
-        public string? Status { get; set; }
-    }
+	public string StudentName { get; set; } = null!; //Search StudentName bang cach lay object Student trong IncidentRecord
+	public string? IncidentType { get; set; } //Search Incident Type
+	public DateTime DateOccurred { get; set; } //Sort theo ascending date
+	public string? Status { get; set; }
 }
+
+       
+

@@ -235,6 +235,47 @@ public class AccountService : IAccountService
 		}
 	}
 
+	public async Task<AccountDetailModel> getStudentDetail(string parentId)
+	{
+		try
+		{
+			//Get student id through parent id
+			var accounts = await _unitOfWork.GetRepository<Account>().FindAsync(user => user.ParentId == parentId);
+			if (accounts == null)
+			{
+				throw new AppException("Account not found.");
+			}
+			if(accounts.Role != AccountRole.Student.ToString())
+			{
+				throw new AppException("Account is not a student.");
+			}
+			if (accounts.Status == AccountStatus.Inactive.ToString())
+			{
+				throw new AppException("Account is inactive.");
+			}
+
+			return new AccountDetailModel
+			{
+				Id = accounts.Id,
+				FullName = accounts.FullName,
+				Email = accounts.Email,
+				PhoneNumber = accounts.PhoneNumber,
+				Address = accounts.Address,
+				Role = accounts.Role,
+				Status = accounts.Status,
+				ParentId = accounts.ParentId,
+				ParentName = accounts.Parent != null ? accounts.Parent.FullName : null
+			};
+
+		}
+		catch (Exception e)
+		{
+
+			Console.WriteLine(e);
+			throw new Exception(e.Message);
+		}
+	}
+
 	//private methods
 	public bool IsValid(string password)
 	{
