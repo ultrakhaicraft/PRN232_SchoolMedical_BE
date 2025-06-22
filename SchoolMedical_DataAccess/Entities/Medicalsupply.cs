@@ -15,9 +15,9 @@ public partial class Medicalsupply
 
     public int Amount { get; set; }
 
-    public bool? IsAvailable { get; set; }
+    public bool? IsAvailable { get; set; } = true;
 
-    public bool IsDeleted { get; set; }
+	public bool IsDeleted { get; set; } = false;
 
-    public virtual Account CreatedByNavigation { get; set; } = null!;
+	public virtual Account CreatedByNavigation { get; set; } = null!;
 }

@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SchoolMedical_BusinessLogic.Interface;
+using SchoolMedical_BusinessLogic.Utility;
 using SchoolMedical_DataAccess.DTOModels;
 using SchoolMedical_DataAccess.Entities;
 using SchoolMedical_DataAccess.Interfaces;
@@ -48,6 +49,7 @@ namespace SchoolMedical_BusinessLogic.Core
             // Apply sorting
             query = ApplySorting(query, request.SortBy, request.IsDescending);
 
+            /*
             // Get total count
             var totalCount = await query.CountAsync();
 
@@ -75,7 +77,24 @@ namespace SchoolMedical_BusinessLogic.Core
                 TotalPages = (int)Math.Ceiling((double)totalCount / request.PageSize),
                 Data = medicineRequests
             };
-        }
+            */
+
+            var response = query.Select(mr => new MedicineRequestResponseDto
+                {
+                    Id = mr.Id,
+                    RequestBy = mr.RequestBy,
+                    RequestByName = mr.RequestByNavigation.FullName ?? "Unknown",
+                    ForStudent = mr.ForStudent,
+                    ForStudentName = mr.ForStudentNavigation.FullName ?? "Unknown",
+                    Description = mr.Description,
+                    DateSent = mr.DateSent
+                });
+
+
+            var pagedData = await PagingExtension.ToPagingModel(response, request.PageIndex, request.PageSize);
+
+            return pagedData;
+		}
 
         public async Task<MedicineRequestResponseDto?> GetMedicineRequestByIdAsync(string id)
         {
