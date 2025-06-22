@@ -17,7 +17,7 @@ namespace PRN232_SchoolMedicalAPI.Controllers
 
         // GET: api/medicalsupply
         [HttpGet]
-        public async Task<IActionResult> GetAll([FromQuery] MedicalSupplyDTO filter)
+        public async Task<IActionResult> GetAll([FromQuery] MedicalSupplyQuery filter)
         {
             var result = await medicalSupplyService.GetAllMedicalSupplyAsync(filter);
             return Ok(result);
@@ -36,17 +36,17 @@ namespace PRN232_SchoolMedicalAPI.Controllers
 
         // POST: api/medicalsupply
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] MedicalSupplyDTO request)
+        public async Task<IActionResult> Create([FromBody] MedicalSupplyCreateModel request)
         {
-            // Tạm hardcode createdBy, trong thực tế lấy từ token hoặc context user
+            
             var createdBy = "admin";
             var result = await medicalSupplyService.CreateMedicalSupplyAsync(request, createdBy);
-            return CreatedAtAction(nameof(GetById), new { id = result.Id }, result);
+            return CreatedAtAction(nameof(GetById), new { id = result }, result);
         }
 
         // PUT: api/medicalsupply/{id}
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(string id, [FromBody] MedicalSupplyDTO request)
+        public async Task<IActionResult> Update(string id, [FromBody] MedicalSupplyUpdateModel request)
         {
             try
             {

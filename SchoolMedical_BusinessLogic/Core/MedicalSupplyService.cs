@@ -1,4 +1,5 @@
 ﻿using SchoolMedical_BusinessLogic.Interface;
+using SchoolMedical_BusinessLogic.Utility;
 using SchoolMedical_DataAccess.DTOModels;
 using SchoolMedical_DataAccess.Entities;
 using SchoolMedical_DataAccess.Interfaces;
@@ -12,10 +13,16 @@ namespace SchoolMedical_BusinessLogic.Core
 {
     public class MedicalSupplyService : IMedicalSupplyService
     {
-        private readonly IUnitOfWork unitOfWork;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IGenericRepository<Medicalsupply> medicalSupply;
 
-        public async Task<MedicalSupplyDTO> CreateMedicalSupplyAsync(MedicalSupplyDTO request, string createdBy)
+		public MedicalSupplyService(IUnitOfWork unitOfWork)
+		{
+			_unitOfWork = unitOfWork;
+			medicalSupply = _unitOfWork.GetRepository<Medicalsupply>();
+		}
+
+		public async Task<string> CreateMedicalSupplyAsync(MedicalSupplyCreateModel request, string createdBy)
         {
             var newSupply = new Medicalsupply
             {
@@ -23,28 +30,18 @@ namespace SchoolMedical_BusinessLogic.Core
                 Name = request.Name ?? "",
                 Description = request.Description,
                 Amount = request.Amount,
-                IsAvailable = request.IsAvailable ?? true,
-                IsDeleted = false,
-                CreatedBy = createdBy
-            };
+                CreatedBy = createdBy //User ID of the creator
+			};
 
             await medicalSupply.InsertAsync(newSupply);
-            await unitOfWork.SaveAsync();
+            await _unitOfWork.SaveAsync();
 
-            return new MedicalSupplyDTO
-            {
-                Id = newSupply.Id,
-                Name = newSupply.Name,
-                Description = newSupply.Description,
-                Amount = newSupply.Amount,
-                IsAvailable = newSupply.IsAvailable,
-                IsDeleted = newSupply.IsDeleted,
-                CreatedBy = newSupply.CreatedBy
-            };
-        }
+            return  newSupply.Id;
+		}
 
-        public async Task<PagingModel<MedicalSupplyDTO>> GetAllMedicalSupplyAsync(MedicalSupplyDTO request)
+        public async Task<PagingModel<MedicalSupplyViewModel>> GetAllMedicalSupplyAsync(MedicalSupplyQuery request)
         {
+            /*
             int pageIndex = 1; 
             int pageSize = 10; 
 
@@ -56,7 +53,7 @@ namespace SchoolMedical_BusinessLogic.Core
             var pagedData = allData
                 .Skip((pageIndex - 1) * pageSize)
                 .Take(pageSize)
-                .Select(x => new MedicalSupplyDTO
+                .Select(x => new MedicalSupplyModel
                 {
                     Id = x.Id,
                     Name = x.Name,
@@ -69,7 +66,7 @@ namespace SchoolMedical_BusinessLogic.Core
                 })
                 .ToList();
 
-            return new PagingModel<MedicalSupplyDTO>
+            return new PagingModel<MedicalSupplyModel>
             {
                 PageIndex = pageIndex,
                 PageSize = pageSize,
@@ -77,17 +74,34 @@ namespace SchoolMedical_BusinessLogic.Core
                 TotalPages = totalPages,
                 Data = pagedData
             };
-        }
+            */
+
+            var allData = await _unitOfWork.GetRepository<Medicalsupply>().GetAllAsync();
+            allData = allData.Where(x => !x.IsDeleted);
+
+            var viewData = allData.Select(x => new MedicalSupplyViewModel
+            {
+                Id = x.Id,
+                Name = x.Name,
+                Amount = x.Amount,
+                IsAvailable = x.IsAvailable,
+                IsDeleted = x.IsDeleted,
+            });
+				
+            var pagedData = await PagingExtension.ToPagingModel(viewData, request.PageIndex, request.PageSize);
+            return pagedData;
+
+		}
 
 
-        public async Task<MedicalSupplyDTO?> GetMedicalSupplyByIdAsync(string id)
+        public async Task<MedicalSupplyDetailModel> GetMedicalSupplyByIdAsync(string id)
         {
             var entity = await medicalSupply.GetByIdAsync(id);
             if (entity == null || entity.IsDeleted)
                 return null;
 
-            return new MedicalSupplyDTO
-            {
+            return new MedicalSupplyDetailModel
+			{
                 Id = entity.Id,
                 Name = entity.Name,
                 Description = entity.Description,
@@ -95,7 +109,6 @@ namespace SchoolMedical_BusinessLogic.Core
                 IsAvailable = entity.IsAvailable,
                 IsDeleted = entity.IsDeleted,
                 CreatedBy = entity.CreatedBy,
-                CreatedByNavigationId = entity.CreatedByNavigation?.Id
             };
         }
 
@@ -107,16 +120,16 @@ namespace SchoolMedical_BusinessLogic.Core
 
             entity.IsDeleted = true;
             medicalSupply.Update(entity);
-            await unitOfWork.SaveAsync();
+            await _unitOfWork.SaveAsync();
 
             return true;
         }
 
-        public async Task<MedicalSupplyDTO> UpdateMedicalSupplyAsync(MedicalSupplyDTO request, string medicineId)
+        public async Task<bool> UpdateMedicalSupplyAsync(MedicalSupplyUpdateModel request, string medicineId)
         {
             var entity = await medicalSupply.GetByIdAsync(medicineId);
             if (entity == null || entity.IsDeleted)
-                throw new Exception("Medical supply not found");
+                return false;
 
             entity.Name = request.Name ?? entity.Name;
             entity.Description = request.Description;
@@ -124,19 +137,9 @@ namespace SchoolMedical_BusinessLogic.Core
             entity.IsAvailable = request.IsAvailable ?? entity.IsAvailable;
 
             medicalSupply.Update(entity);
-            await unitOfWork.SaveAsync();
+            await _unitOfWork.SaveAsync();
 
-            return new MedicalSupplyDTO
-            {
-                Id = entity.Id,
-                Name = entity.Name,
-                Description = entity.Description,
-                Amount = entity.Amount,
-                IsAvailable = entity.IsAvailable,
-                IsDeleted = entity.IsDeleted,
-                CreatedBy = entity.CreatedBy,
-                CreatedByNavigationId = entity.CreatedByNavigation?.Id
-            };
-        }
+			return true;
+		}
     }
 }
