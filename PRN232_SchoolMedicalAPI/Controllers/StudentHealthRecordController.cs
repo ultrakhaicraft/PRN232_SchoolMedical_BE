@@ -70,14 +70,15 @@ public class StudentHealthRecordController : ControllerBase
 			return BadRequest(ModelState);
 		}
 
-		var createdBy = User.Claims.GetUserIdFromJwtToken() ?? "Unknown";
-		var recordId = await _studentHealthRecordService.CreateRecordAsync(record, createdBy);
+		//var createdBy = User.Claims.GetUserIdFromJwtToken() ?? "Unknown";
+		var recordId = await _studentHealthRecordService.CreateRecordAsync(record, record.CreatedBy);
 		HttpContext.Items["CustomMessage"] = "Record created successfully";
 		return CreatedAtAction(nameof(GetStudentHealthRecordById), new { id = recordId }, recordId);
 	}
 
 	/// <summary>
 	/// Update existing student health record
+	/// TODO: do not change createdBy
 	/// </summary>
 	[HttpPut("{id}")]
 	public async Task<IActionResult> UpdateStudentHealthRecord(string id, [FromBody] StudentHealthRecordUpdateModel record)
@@ -87,8 +88,8 @@ public class StudentHealthRecordController : ControllerBase
 			return BadRequest(ModelState);
 		}
 
-		var createdBy = User.Claims.GetUserIdFromJwtToken() ?? "Unknown";
-		await _studentHealthRecordService.UpdateRecordAsync(record, id, createdBy);
+		
+		await _studentHealthRecordService.UpdateRecordAsync(record, id);
 		HttpContext.Items["CustomMessage"] = "Record updated successfully";
 		return Ok();
 	}

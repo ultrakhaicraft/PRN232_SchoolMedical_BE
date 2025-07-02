@@ -3,7 +3,6 @@ using Microsoft.Extensions.DependencyInjection;
 using SchoolMedical_BusinessLogic.Core;
 using SchoolMedical_BusinessLogic.Interface;
 using SchoolMedical_BusinessLogic.Mapper;
-using SchoolMedical_BusinessLogic.Services;
 using SchoolMedical_BusinessLogic.Utility;
 using SchoolMedical_DataAccess.Interfaces;
 using SchoolMedical_DataAccess.Repositories;
@@ -47,5 +46,6 @@ public static class BusinessLogicDI
 		services.AddScoped<IMedicineService, MedicineService>();
 		services.AddScoped<IMedicineRequestService, MedicineRequestService>();
         services.AddScoped<IIncidentRecordService, IncidentRecordService>();
+		services.AddScoped<IStudentHealthRecordService, StudentHealthRecordService>();
     }
 }

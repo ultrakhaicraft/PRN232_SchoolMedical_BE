@@ -107,4 +107,20 @@ public class AccountController : ControllerBase
 		HttpContext.Items["CustomMessage"] = "Account status changed successfully";
 		return Ok();
 	}
+
+	[HttpPatch("assign-student")]
+	public async Task<IActionResult> AssignStudentToParent([FromQuery] string studentId,string parentId)
+	{
+		var result = await _accountService.AssignStudentToParent(studentId, parentId);
+		if (result)
+		{
+			HttpContext.Items["CustomMessage"] = "Assign Student to Parent successfully";
+			return Ok();
+		}
+		else
+		{
+			HttpContext.Items["CustomMessage"] = "Assign Student to Parent failed because they are not found";
+			return BadRequest();
+		}
+	}
 }

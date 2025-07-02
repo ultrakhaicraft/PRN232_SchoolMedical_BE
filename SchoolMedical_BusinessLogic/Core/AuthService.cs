@@ -58,6 +58,7 @@ public class AuthService : IAuthService
 			Token = token,
 			FullName = account.FullName,
 			Email = account.Email,
+			Id=account.Id.ToString(),
 			Role = account.Role
 		};
 	}

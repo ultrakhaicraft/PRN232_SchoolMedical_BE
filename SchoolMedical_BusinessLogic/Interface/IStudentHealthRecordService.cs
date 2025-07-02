@@ -14,6 +14,6 @@ public interface IStudentHealthRecordService
 	Task<StudentHealthRecordDetailModel> GetRecordByIdAsync(string recordId);
 	Task<StudentHealthRecordDetailModel> GetRecordFromStudentIdAsync(string studentId);
 	Task<string> CreateRecordAsync(StudentHealthRecordCreateModel record, string createdBy);
-	Task UpdateRecordAsync(StudentHealthRecordUpdateModel record, string recordI, string createdBy);
+	Task UpdateRecordAsync(StudentHealthRecordUpdateModel record, string recordId);
 	Task DeleteRecordAsync(string recordId);
 }

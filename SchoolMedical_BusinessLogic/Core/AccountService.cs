@@ -1,4 +1,5 @@
-﻿using SchoolMedical_BusinessLogic.Interface;
+﻿using Org.BouncyCastle.Asn1.Ocsp;
+using SchoolMedical_BusinessLogic.Interface;
 using SchoolMedical_BusinessLogic.Utility;
 using SchoolMedical_DataAccess.DTOModels;
 using SchoolMedical_DataAccess.Entities;
@@ -16,13 +17,12 @@ namespace SchoolMedical_BusinessLogic.Core;
 public class AccountService : IAccountService
 {
 	private readonly IUnitOfWork _unitOfWork;
-	private readonly IGenericRepository<Account> _accountRepository;
 	
 
-	public AccountService(IUnitOfWork unitOfWork, IGenericRepository<Account> accountRepository)
+	public AccountService(IUnitOfWork unitOfWork)
 	{
 		_unitOfWork = unitOfWork;
-		_accountRepository = accountRepository;
+		
 	}
 
 	public Task ChangeAccountStatus(string userId, AccountStatus status)
@@ -42,7 +42,7 @@ public class AccountService : IAccountService
 		catch (Exception e)
 		{
 			Console.WriteLine(e);
-			throw new Exception(e.Message);
+			return null;
 		}
 	}
 
@@ -76,7 +76,7 @@ public class AccountService : IAccountService
 		{
 
 			Console.WriteLine(e);
-			throw new Exception(e.Message);
+			return null;
 		}
 	}
 
@@ -94,7 +94,7 @@ public class AccountService : IAccountService
 				throw new AppException("Account is inactive.");
 			}
 
-			return new AccountDetailModel
+			var detail= new AccountDetailModel
 			{
 				Id = accounts.Id,
 				FullName = accounts.FullName,
@@ -103,16 +103,30 @@ public class AccountService : IAccountService
 				Address = accounts.Address,
 				Role = accounts.Role,
 				Status = accounts.Status,
-				ParentId = accounts.ParentId,
-				ParentName = accounts.Parent != null ? accounts.Parent.FullName : null
+				
 			};
+
+			//If the role is either parent or student, assign additional data depend on these 2 role. If not, skip and return detail
+			if (accounts.Role == AccountRole.Parent.ToString())
+			{
+				(string studentId, string studentName) studentData = await FindStudentByParentId(accounts.Id);
+				detail.StudentId=studentData.studentId;
+				detail.StudentName=studentData.studentName;
+			}
+			else if(accounts.Role==AccountRole.Student.ToString())
+			{
+				detail.ParentId = accounts.ParentId;
+				detail.ParentName = accounts.Parent != null ? accounts.Parent.FullName : null;
+			}
+
+			return detail;
 
 		}
 		catch (Exception e)
 		{
 
 			Console.WriteLine(e);
-			throw new Exception(e.Message);
+			return null;
 		}
 	}
 
@@ -147,6 +161,12 @@ public class AccountService : IAccountService
 				query = query.Where(account => account.FullName != null && account.FullName.ToLower().Contains(nameFilter));
 			}
 
+			//Search Based on Email
+			if (!string.IsNullOrEmpty(request.Email))
+			{
+				query = query.Where(account => account.Email != null && account.Email.Equals(request.Email));
+			}
+
 			if (query == null || !query.Any())
 			{
 				throw new AppException("No accounts found.");
@@ -176,11 +196,11 @@ public class AccountService : IAccountService
 		{
 
 			Console.WriteLine(e);
-			throw new Exception(e.Message);
+			return null;
 		}
 	}
 
-	public Task SoftDeleteAccount(string userId)
+	public async Task SoftDeleteAccount(string userId)
 	{
 		try
 		{
@@ -193,17 +213,17 @@ public class AccountService : IAccountService
 			account.Status = AccountStatus.Inactive.ToString();
 			_unitOfWork.GetRepository<Account>().Update(account);
 			_unitOfWork.Save();
-			return Task.CompletedTask; 
+			
 		}
 		catch (Exception e)
 		{
 
 			Console.WriteLine(e);
-			throw new Exception(e.Message);
+			
 		}
 	}
 
-	public Task UpdateAccount(string userId, AccountUpdateRequest request)
+	public async Task UpdateAccount(string userId, AccountUpdateRequest request)
 	{
 		try
 		{
@@ -215,23 +235,18 @@ public class AccountService : IAccountService
 			account.FullName = request.FullName;
 			account.Email = request.Email;
 			account.PhoneNumber = request.PhoneNumber;
-			if(!IsValid(request.Password))
-			{
-				throw new AppException("Password does not meet the required criteria.");
-			}
-			account.Password = BCrypt.Net.BCrypt.HashPassword(request.Password);
 			account.Address = request.Address;
 			account.Role = request.Role;
 			account.ParentId = request.ParentId;
 			_unitOfWork.GetRepository<Account>().Update(account);
 			_unitOfWork.Save();
-			return Task.CompletedTask;
+			
 		}
 		catch (Exception e)
 		{
 
 			Console.WriteLine(e);
-			throw new Exception(e.Message);
+			
 		}
 	}
 
@@ -272,12 +287,40 @@ public class AccountService : IAccountService
 		{
 
 			Console.WriteLine(e);
-			throw new Exception(e.Message);
+			return null;
 		}
 	}
 
+	
+
+	public async Task<bool> AssignStudentToParent(string parentId, string studentId)
+	{
+		try
+		{
+			//Get student Account
+			var account = _unitOfWork.GetRepository<Account>()
+				.Find(user => user.Id == studentId && user.Status != AccountStatus.Inactive.ToString());
+			if (account == null)
+			{
+				throw new AppException("Account not found or already inactive.");
+			}
+			account.ParentId = parentId;
+			_unitOfWork.GetRepository<Account>().Update(account);
+			_unitOfWork.Save();
+			return true;
+		}
+		catch (Exception e)
+		{
+			Console.WriteLine(e);
+			return false;
+		}
+	}
+
+
+
+
 	//private methods
-	public bool IsValid(string password)
+	private bool IsValid(string password)
 	{
 		if (password.Length < 8) return false;
 
@@ -289,4 +332,13 @@ public class AccountService : IAccountService
 
 		return true;
 	}
+
+	private async Task<(string studentId, string studentName)> FindStudentByParentId(string parentId)
+	{
+		var student= await _unitOfWork.GetRepository<Account>().FindAsync(x=>x.ParentId.Equals(parentId));
+		if (student == null) throw new AppException("Can't found this student based on this parentId");
+		return (student.Id, student.FullName);
+	}
+
+	
 }
