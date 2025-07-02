@@ -28,6 +28,14 @@ namespace SchoolMedical_BusinessLogic.Core
 			try
 			{
 				await Task.Delay(100);
+
+				var parent= await _unitOfWork.GetRepository<Account>().GetByIdAsync(createdBy);
+				if(parent == null)
+				{
+					Console.WriteLine("Parent ID Not Found");
+					return "Can't find createdBy Id";
+				}
+
 				var studentHealthRecord = new Studenthealthrecord
 				{
 					Id = Guid.NewGuid().ToString(),
@@ -37,7 +45,7 @@ namespace SchoolMedical_BusinessLogic.Core
 					ChronicDiseases = record.ChronicDiseases,
 					Vision = record.Vision,
 					Hearing = record.Hearing,
-					Status = record.Status,
+					Status = RecordStatus.Active.ToString(),
 					CreatedBy = createdBy, // Assuming CreatedBy is a property in the create model
 					
 				};
@@ -243,7 +251,7 @@ namespace SchoolMedical_BusinessLogic.Core
 			}
 		}
 
-		public async Task UpdateRecordAsync(StudentHealthRecordUpdateModel record, string recordId,string createdBy)
+		public async Task UpdateRecordAsync(StudentHealthRecordUpdateModel record, string recordId)
 		{
 			try
 			{
@@ -256,7 +264,7 @@ namespace SchoolMedical_BusinessLogic.Core
 				existingRecord.Vision = record.Vision;
 				existingRecord.Hearing = record.Hearing;
 				existingRecord.Status = record.Status;
-				existingRecord.CreatedBy = createdBy; // Assuming CreatedBy is a property in the update model
+				
 
 
 				await _unitOfWork.GetRepository<Studenthealthrecord>().UpdateAsync(existingRecord);

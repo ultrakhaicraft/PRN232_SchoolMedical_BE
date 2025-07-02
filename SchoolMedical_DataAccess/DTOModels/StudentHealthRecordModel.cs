@@ -2,6 +2,7 @@
 using SchoolMedical_DataAccess.Enums;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -49,25 +50,30 @@ public class StudentHealthRecordViewModel
 
 public class StudentHealthRecordCreateModel
 {
-	public string Id { get; set; } = null!;
-
+	[Required(ErrorMessage ="Student Id is required")]
 	public string StudentId { get; set; } = null!;
 
+	[Required(ErrorMessage = "Student Name is required")]
 	public string StudentName { get; set; } = null!;
 
+	[Required(ErrorMessage = "Created By is required")]
 	public string CreatedBy { get; set; } = null!;
 
+	[Required(ErrorMessage = "Height is required")]
 	public int? Height { get; set; }
 
+	[Required(ErrorMessage = "Allergies is required")]
 	public string? Allergies { get; set; }
 
+	[Required(ErrorMessage = "Chronic Diseases is required")]
 	public string? ChronicDiseases { get; set; }
 
+	[Required(ErrorMessage = "Vision is required")]
 	public string? Vision { get; set; }
 
+	[Required(ErrorMessage = "Hearing is required")]
 	public string? Hearing { get; set; }
 
-	public string? Status { get; set; }
 }
 
 public class StudentHealthRecordUpdateModel

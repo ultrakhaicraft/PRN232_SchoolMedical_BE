@@ -21,5 +21,6 @@ public interface IAccountService
 	public Task SoftDeleteAccount(string userId);
 	public Task ChangeAccountStatus(string userId, AccountStatus status);
 	public Task<AccountDetailModel> getStudentDetail(string parentId);
+	public Task<bool> AssignStudentToParent(string parentId, string studentId);
 
 }

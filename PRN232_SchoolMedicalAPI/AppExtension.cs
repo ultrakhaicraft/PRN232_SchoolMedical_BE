@@ -111,8 +111,7 @@ public static class AppExtension
 					ValidIssuer = jwtModel?.ValidIssuer,
 					IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtModel?.SecretKey ?? ""))
 				};
-			})
-			.AddCookie();
+			});
 			
 	}
 
