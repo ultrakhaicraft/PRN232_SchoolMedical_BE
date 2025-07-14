@@ -42,7 +42,7 @@ public class AccountController : ControllerBase
 		return Ok(account);
 	}
 
-	[HttpGet("{id}/student")]
+	[HttpGet("{parentId}/student")]
 	public async Task<IActionResult> GetStudentByParentId(string parentId)
 	{
 		var account = await _accountService.getStudentDetail(parentId);
@@ -111,15 +111,15 @@ public class AccountController : ControllerBase
 	[HttpPatch("assign-student")]
 	public async Task<IActionResult> AssignStudentToParent([FromQuery] string studentId,string parentId)
 	{
-		var result = await _accountService.AssignStudentToParent(studentId, parentId);
+		var result = await _accountService.AssignStudentToParent(parentId, studentId);
 		if (result)
 		{
-			HttpContext.Items["CustomMessage"] = "Assign Student to Parent successfully";
+			HttpContext.Items["CustomMessage"] = "Link Student to Parent successfully";
 			return Ok();
 		}
 		else
 		{
-			HttpContext.Items["CustomMessage"] = "Assign Student to Parent failed because they are not found";
+			HttpContext.Items["CustomMessage"] = "Assign Student to Parent failed because they are not found or already linked or st";
 			return BadRequest();
 		}
 	}

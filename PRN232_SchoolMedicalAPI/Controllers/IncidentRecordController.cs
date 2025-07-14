@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PRN232_SchoolMedicalAPI.Helpers;
 using SchoolMedical_BusinessLogic.Interface;
+using SchoolMedical_BusinessLogic.Utility;
 using SchoolMedical_DataAccess.DTOModels;
 using System.Security.Claims;
 
@@ -88,10 +89,29 @@ public class IncidentRecordController : ControllerBase
         return Ok(incident);
     }
 
-    /// <summary>
-    /// Soft delete incident record
-    /// </summary>
-    [HttpDelete("{id}")]
+	/// <summary>
+	/// Update existing incident record
+	/// </summary>
+	[HttpPatch("change-status/{id}")]
+	//[Authorize(Roles = "SchoolNurse, Admin, Manager")]
+	public async Task<IActionResult> UpdateRecordStatus(string id, [FromQuery] string status)
+	{
+		
+
+		var result = await _incidentRecordService.ChangeStatusRecord(id, status);
+		if (result)
+		{
+			throw new AppException("Failed to change record status");
+		}
+
+		HttpContext.Items["CustomMessage"] = "Incident record updated status successfully";
+		return Ok(result);
+	}
+
+	/// <summary>
+	/// Soft delete incident record
+	/// </summary>
+	[HttpDelete("{id}")]
     //[Authorize(Roles = "SchoolNurse, Admin, Manager")]
     public async Task<IActionResult> DeleteIncidentRecord(string id)
     {

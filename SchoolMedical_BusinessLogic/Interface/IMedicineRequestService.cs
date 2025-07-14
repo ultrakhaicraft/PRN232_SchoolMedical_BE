@@ -12,7 +12,7 @@ namespace SchoolMedical_BusinessLogic.Interface
         Task<PagingModel<MedicineRequestResponseDto>> GetMedicineRequestsAsync(MedicineRequestFilterRequestDto request);
         Task<MedicineRequestResponseDto?> GetMedicineRequestByIdAsync(string id);
         Task<MedicineRequestResponseDto> CreateMedicineRequestAsync(CreateMedicineRequestRequestDto request);
-        Task<MedicineRequestResponseDto> UpdateMedicineRequestAsync(UpdateMedicineRequestRequestDto request);
+        Task<MedicineRequestResponseDto> UpdateMedicineRequestAsync(UpdateMedicineRequestRequestDto request, string id);
         Task<bool> DeleteMedicineRequestAsync(string id);
         Task<List<MedicineRequestResponseDto>> GetMedicineRequestsByStudentAsync(string studentId);
         Task<List<MedicineRequestResponseDto>> GetMedicineRequestsByRequesterAsync(string requesterId);

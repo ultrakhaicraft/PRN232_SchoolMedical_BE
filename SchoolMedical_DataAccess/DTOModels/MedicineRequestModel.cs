@@ -21,8 +21,7 @@ namespace SchoolMedical_DataAccess.DTOModels
 
     public class UpdateMedicineRequestRequestDto
     {
-        [Required(ErrorMessage = "Medicine request ID is required")]
-        public string Id { get; set; } = null!;
+       
 
         [Required(ErrorMessage = "RequestBy is required")]
         public string RequestBy { get; set; } = null!;

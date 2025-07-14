@@ -175,13 +175,13 @@ namespace SchoolMedical_BusinessLogic.Core
             }
         }
 
-        public async Task<MedicineRequestResponseDto> UpdateMedicineRequestAsync(UpdateMedicineRequestRequestDto request)
+        public async Task<MedicineRequestResponseDto> UpdateMedicineRequestAsync(UpdateMedicineRequestRequestDto request, string id)
         {
             try
             {
                 _unitOfWork.BeginTransaction();
 
-                var medicineRequest = await _medicineRequestRepository.GetByIdAsync(request.Id);
+                var medicineRequest = await _medicineRequestRepository.GetByIdAsync(id);
                 if (medicineRequest == null)
                 {
                     throw new KeyNotFoundException("Medicine request not found");
