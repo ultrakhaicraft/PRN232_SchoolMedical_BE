@@ -12,7 +12,6 @@ namespace SchoolMedical_DataAccess.Data
 {
     public static class SeedData
     {
-        /*
         private static readonly Random _random = new Random();
 
         public static async Task SeedAsync(SchoolhealthdbContext context)
@@ -613,6 +612,5 @@ namespace SchoolMedical_DataAccess.Data
             }
         }
 
-        */
     }
 }
