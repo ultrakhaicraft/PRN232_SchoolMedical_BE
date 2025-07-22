@@ -123,4 +123,15 @@ public class AccountController : ControllerBase
 			return BadRequest();
 		}
 	}
+
+	/// <summary>
+	/// Get all student accounts (no pagination)
+	/// </summary>
+	[HttpGet("students")]
+	public async Task<IActionResult> GetAllStudentAccounts()
+	{
+		var students = await _accountService.GetAllStudentAccounts();
+		HttpContext.Items["CustomMessage"] = "Get all student accounts successfully";
+		return Ok(students);
+	}
 }
