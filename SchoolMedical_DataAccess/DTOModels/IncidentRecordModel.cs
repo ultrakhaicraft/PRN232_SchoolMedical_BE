@@ -28,8 +28,6 @@ namespace SchoolMedical_DataAccess.DTOModels;
     {
         public string StudentId { get; set; } = null!;
 
-        public string HandleBy { get; set; } = null!;
-
         public string? IncidentType { get; set; }
 
         public string? Description { get; set; }

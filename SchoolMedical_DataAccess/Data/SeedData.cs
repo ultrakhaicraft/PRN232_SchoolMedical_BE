@@ -612,7 +612,6 @@ namespace SchoolMedical_DataAccess.Data
                 return EventStatus.Cancelled.ToString();
             }
         }
-
         */
     }
 }

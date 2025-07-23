@@ -291,6 +291,23 @@ public class AccountService : IAccountService
 		}
 	}
 
+	public async Task<List<AccountViewModel>> GetAllStudentAccounts()
+	{
+		var accounts = await _unitOfWork.GetRepository<Account>().GetAllAsync();
+		var students = accounts
+			.Where(a => a.Role == AccountRole.Student.ToString() && a.Status != AccountStatus.Inactive.ToString())
+			.Select(a => new AccountViewModel
+			{
+				Id = a.Id,
+				FullName = a.FullName,
+				Email = a.Email,
+				Role = a.Role,
+				Status = a.Status
+			})
+			.ToList();
+		return students;
+	}
+
 	
 
 	public async Task<bool> AssignStudentToParent(string parentId, string studentId)
