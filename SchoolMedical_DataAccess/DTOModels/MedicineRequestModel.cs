@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SchoolMedical_DataAccess.Enums;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -40,6 +41,8 @@ namespace SchoolMedical_DataAccess.DTOModels
         public DateTime? DateFrom { get; set; }
         public DateTime? DateTo { get; set; }
 
+        public RequestStatus? Status { get; set; }
+
         [Range(1, int.MaxValue, ErrorMessage = "Page index must be greater than 0")]
         public int PageIndex { get; set; } = 1;
 
@@ -62,5 +65,6 @@ namespace SchoolMedical_DataAccess.DTOModels
         public string ForStudentName { get; set; } = null!;
         public string? Description { get; set; }
         public DateTime DateSent { get; set; }
-    }
+        public string? Status { get; set; }
+	}
 }

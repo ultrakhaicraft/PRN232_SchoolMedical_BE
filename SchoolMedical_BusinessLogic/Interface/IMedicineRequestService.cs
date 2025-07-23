@@ -14,7 +14,8 @@ namespace SchoolMedical_BusinessLogic.Interface
         Task<MedicineRequestResponseDto> CreateMedicineRequestAsync(CreateMedicineRequestRequestDto request);
         Task<MedicineRequestResponseDto> UpdateMedicineRequestAsync(UpdateMedicineRequestRequestDto request, string id);
         Task<bool> DeleteMedicineRequestAsync(string id);
-        Task<List<MedicineRequestResponseDto>> GetMedicineRequestsByStudentAsync(string studentId);
-        Task<List<MedicineRequestResponseDto>> GetMedicineRequestsByRequesterAsync(string requesterId);
-    }
+        Task<PagingModel<MedicineRequestResponseDto>> GetMedicineRequestsByStudentAsync(string studentId, int pageIndex = 1, int pageSize = 5);
+        Task<PagingModel<MedicineRequestResponseDto>> GetMedicineRequestsByRequesterAsync(string requesterId, int pageIndex = 1, int pageSize = 5);
+
+	}
 }
