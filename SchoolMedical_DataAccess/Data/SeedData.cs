@@ -89,7 +89,7 @@ namespace SchoolMedical_DataAccess.Data
                 Email = "emily.wilson@school.edu",
                 Password = BCrypt.Net.BCrypt.HashPassword("123456"),
                 PhoneNumber = "555-0201",
-                Role = "Nurse",
+                Role = "SchoolNurse",
                 Address = "Health Center Room 101",
                 Status = AccountStatus.Active.ToString()
             });
@@ -101,7 +101,7 @@ namespace SchoolMedical_DataAccess.Data
                 Email = "robert.davis@school.edu",
                 Password = BCrypt.Net.BCrypt.HashPassword("123456"),
                 PhoneNumber = "555-0202",
-                Role = "Nurse",
+                Role = "SchoolNurse",
                 Address = "Health Center Room 102",
                 Status = AccountStatus.Active.ToString()
             });
@@ -214,7 +214,7 @@ namespace SchoolMedical_DataAccess.Data
         private static async Task SeedMedicinesAsync(SchoolhealthdbContext context)
         {
             var adminIds = context.Accounts.Where(a => a.Role == "Admin").Select(a => a.Id).ToList();
-            var nurseIds = context.Accounts.Where(a => a.Role == "Nurse").Select(a => a.Id).ToList();
+            var nurseIds = context.Accounts.Where(a => a.Role == "SchoolNurse").Select(a => a.Id).ToList();
             var creatorIds = adminIds.Concat(nurseIds).ToList();
 
             var medicines = new[]
@@ -254,7 +254,7 @@ namespace SchoolMedical_DataAccess.Data
         private static async Task SeedMedicalSuppliesAsync(SchoolhealthdbContext context)
         {
             var adminIds = context.Accounts.Where(a => a.Role == "Admin").Select(a => a.Id).ToList();
-            var nurseIds = context.Accounts.Where(a => a.Role == "Nurse").Select(a => a.Id).ToList();
+            var nurseIds = context.Accounts.Where(a => a.Role == "SchoolNurse").Select(a => a.Id).ToList();
             var creatorIds = adminIds.Concat(nurseIds).ToList();
 
             var supplies = new[]
@@ -334,7 +334,7 @@ namespace SchoolMedical_DataAccess.Data
         private static async Task SeedStudentHealthRecordsAsync(SchoolhealthdbContext context)
         {
             var studentIds = context.Accounts.Where(a => a.Role == "Student").Select(a => a.Id).ToList();
-            var nurseIds = context.Accounts.Where(a => a.Role == "Nurse").Select(a => a.Id).ToList();
+            var nurseIds = context.Accounts.Where(a => a.Role == "SchoolNurse").Select(a => a.Id).ToList();
 
             var allergies = new[]
             {
@@ -377,7 +377,7 @@ namespace SchoolMedical_DataAccess.Data
         private static async Task SeedIncidentRecordsAsync(SchoolhealthdbContext context)
         {
             var studentIds = context.Accounts.Where(a => a.Role == "Student").Select(a => a.Id).ToList();
-            var nurseIds = context.Accounts.Where(a => a.Role == "Nurse").Select(a => a.Id).ToList();
+            var nurseIds = context.Accounts.Where(a => a.Role == "SchoolNurse").Select(a => a.Id).ToList();
             var teacherIds = context.Accounts.Where(a => a.Role == "Teacher").Select(a => a.Id).ToList();
 
             var handlers = nurseIds.Concat(teacherIds).ToList();
@@ -512,7 +512,7 @@ namespace SchoolMedical_DataAccess.Data
         private static async Task SeedHealthCheckupEventsAsync(SchoolhealthdbContext context)
         {
             var adminIds = context.Accounts.Where(a => a.Role == "Admin").Select(a => a.Id).ToList();
-            var nurseIds = context.Accounts.Where(a => a.Role == "Nurse").Select(a => a.Id).ToList();
+            var nurseIds = context.Accounts.Where(a => a.Role == "SchoolNurse").Select(a => a.Id).ToList();
             var creatorIds = adminIds.Concat(nurseIds).ToList();
             var studentIds = context.Accounts.Where(a => a.Role == "Student").Select(a => a.Id).ToList();
 
@@ -554,7 +554,7 @@ namespace SchoolMedical_DataAccess.Data
         private static async Task SeedVaccineEventsAsync(SchoolhealthdbContext context)
         {
             var adminIds = context.Accounts.Where(a => a.Role == "Admin").Select(a => a.Id).ToList();
-            var nurseIds = context.Accounts.Where(a => a.Role == "Nurse").Select(a => a.Id).ToList();
+            var nurseIds = context.Accounts.Where(a => a.Role == "SchoolNurse").Select(a => a.Id).ToList();
             var creatorIds = adminIds.Concat(nurseIds).ToList();
             var studentIds = context.Accounts.Where(a => a.Role == "Student").Select(a => a.Id).ToList();
 
