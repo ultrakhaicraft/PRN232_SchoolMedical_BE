@@ -258,7 +258,7 @@ public class AccountService : IAccountService
 			var accounts = await _unitOfWork.GetRepository<Account>().FindAsync(user => user.ParentId == parentId);
 			if (accounts == null)
 			{
-				throw new AppException("Account not found.");
+				throw new AppException("Student Account not found.");
 			}
 			if(accounts.Role != AccountRole.Student.ToString())
 			{
@@ -266,7 +266,7 @@ public class AccountService : IAccountService
 			}
 			if (accounts.Status == AccountStatus.Inactive.ToString())
 			{
-				throw new AppException("Account is inactive.");
+				throw new AppException("Student Account is inactive.");
 			}
 
 			return new AccountDetailModel
@@ -317,11 +317,29 @@ public class AccountService : IAccountService
 			//Get student Account
 			var account = _unitOfWork.GetRepository<Account>()
 				.Find(user => user.Id == studentId && user.Status != AccountStatus.Inactive.ToString());
+
+			
+
 			if (account == null)
 			{
 				throw new AppException("Account not found or already inactive.");
 			}
+
+			Console.WriteLine(account.FullName);
+
+			if (account.Role != AccountRole.Student.ToString())
+			{
+				throw new AppException("Account is not a student.");
+			}
+
+			//If student already assigned to parent 
+			if (!string.IsNullOrEmpty(account.ParentId))
+			{
+				throw new AppException("Account already linked");
+			}
+
 			account.ParentId = parentId;
+			account.Status = AccountStatus.Active.ToString(); // Set status to Active since it's now linked to a parent
 			_unitOfWork.GetRepository<Account>().Update(account);
 			_unitOfWork.Save();
 			return true;
@@ -353,7 +371,10 @@ public class AccountService : IAccountService
 	private async Task<(string studentId, string studentName)> FindStudentByParentId(string parentId)
 	{
 		var student= await _unitOfWork.GetRepository<Account>().FindAsync(x=>x.ParentId.Equals(parentId));
-		if (student == null) throw new AppException("Can't found this student based on this parentId");
+		if (student == null) { 
+			Console.WriteLine("No student found for this parent ID.");
+			return (string.Empty, string.Empty); // Return empty values if no student found
+		}
 		return (student.Id, student.FullName);
 	}
 

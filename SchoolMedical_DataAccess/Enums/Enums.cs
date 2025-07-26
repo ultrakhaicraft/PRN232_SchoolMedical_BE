@@ -18,6 +18,7 @@ public enum AccountRole
 public enum AccountStatus
 {
 	Active,
+	NotLinked, //Only for Student, check if the student is linked to a parent account
 	Inactive, //Soft Delete
 }
 
@@ -49,6 +50,13 @@ public enum EventStatus
 	Completed,
 	Cancelled,
 	
+}
+
+public enum IncidentStatus
+{
+	Active,
+	Inactive, //Soft Delete or cancel
+	CompletelyHealed
 }
 
 

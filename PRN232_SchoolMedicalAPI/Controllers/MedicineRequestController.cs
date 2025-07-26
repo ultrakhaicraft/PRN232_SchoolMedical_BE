@@ -84,10 +84,7 @@ namespace PRN232_SchoolMedicalAPI.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateMedicineRequest(string id, [FromBody] UpdateMedicineRequestRequestDto request)
         {
-            if (id != request.Id)
-            {
-                throw new AppException("ID mismatch between route and request body");
-            }
+            
 
             // Validation is handled by ResultManipulator middleware
             if (!ModelState.IsValid)
@@ -95,7 +92,7 @@ namespace PRN232_SchoolMedicalAPI.Controllers
                 return BadRequest(ModelState);
             }
 
-            var medicineRequest = await _medicineRequestService.UpdateMedicineRequestAsync(request);
+            var medicineRequest = await _medicineRequestService.UpdateMedicineRequestAsync(request,id);
 
             return Ok(medicineRequest);
         }
