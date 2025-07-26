@@ -22,8 +22,6 @@ namespace SchoolMedical_DataAccess.DTOModels
 
     public class UpdateMedicineRequestRequestDto
     {
-       
-
         [Required(ErrorMessage = "RequestBy is required")]
         public string RequestBy { get; set; } = null!;
 
@@ -32,6 +30,8 @@ namespace SchoolMedical_DataAccess.DTOModels
 
         [StringLength(1000, ErrorMessage = "Description cannot exceed 1000 characters")]
         public string? Description { get; set; }
+
+        public RequestStatus? Status { get; set; }
     }
 
     public class MedicineRequestFilterRequestDto

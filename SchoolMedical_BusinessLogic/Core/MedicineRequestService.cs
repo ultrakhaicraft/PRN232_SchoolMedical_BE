@@ -152,7 +152,8 @@ namespace SchoolMedical_BusinessLogic.Core
 					RequestBy = request.RequestBy,
 					ForStudent = request.ForStudent,
 					Description = request.Description,
-					DateSent = DateTime.Now
+					DateSent = DateTime.Now,
+					Status = RequestStatus.Pending.ToString()
 				};
 
 				await _medicineRequestRepository.InsertAsync(medicineRequest);
@@ -175,7 +176,7 @@ namespace SchoolMedical_BusinessLogic.Core
 					ForStudentName = createdRequest.ForStudentNavigation?.FullName ?? "Unknown",
 					Description = createdRequest.Description,
 					DateSent = createdRequest.DateSent,
-					Status = RequestStatus.Pending.ToString() // Default status
+					Status = createdRequest.Status
 				};
 			}
 			catch(Exception e)
@@ -215,8 +216,12 @@ namespace SchoolMedical_BusinessLogic.Core
 				medicineRequest.RequestBy = request.RequestBy;
 				medicineRequest.ForStudent = request.ForStudent;
 				medicineRequest.Description = request.Description;
-				medicineRequest.Status = RequestStatus.Pending.ToString(); // Reset status to pending on update
-																		   // Note: DateSent is not updated to preserve original request time
+				
+				if (request.Status.HasValue)
+				{
+					medicineRequest.Status = request.Status.Value.ToString();
+				}
+				// Note: DateSent is not updated to preserve original request time
 
 				await _medicineRequestRepository.UpdateAsync(medicineRequest);
 				await _unitOfWork.SaveAsync();
@@ -260,7 +265,8 @@ namespace SchoolMedical_BusinessLogic.Core
 					return false;
 				}
 
-				await _medicineRequestRepository.DeleteAsync(medicineRequest);
+				medicineRequest.Status = RequestStatus.Deleted.ToString();
+				await _medicineRequestRepository.UpdateAsync(medicineRequest);
 				await _unitOfWork.SaveAsync();
 
 				_unitOfWork.CommitTransaction();
