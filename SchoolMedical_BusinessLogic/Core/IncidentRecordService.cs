@@ -1,6 +1,7 @@
 using SchoolMedical_BusinessLogic.Interface;
 using SchoolMedical_DataAccess.DTOModels;
 using SchoolMedical_DataAccess.Entities;
+using SchoolMedical_DataAccess.Enums;
 using SchoolMedical_DataAccess.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -47,6 +48,7 @@ public class IncidentRecordService : IIncidentRecordService
 			Id = incident.Id,
 			StudentId = incident.StudentId,
 			HandleBy = incident.HandleBy,
+			HandleByName = incident.HandleByNavigation.FullName,
 			IncidentType = incident.IncidentType,
 			Description = incident.Description,
 			DateOccurred = incident.DateOccurred,
@@ -98,16 +100,51 @@ public class IncidentRecordService : IIncidentRecordService
 
 	public async Task<bool> SoftDeleteIncidentRecordAsync(string incidentId)
 	{
-		var repository = _unitOfWork.GetRepository<Incidentrecord>();
-		var incident = await repository.GetByIdAsync(incidentId);
+		try
+		{
+			var repository = _unitOfWork.GetRepository<Incidentrecord>();
+			var incident = await repository.GetByIdAsync(incidentId);
 
-		if (incident == null)
+			if (incident == null)
+				return false;
+
+			incident.Status = RecordStatus.Inactive.ToString();
+			await repository.UpdateAsync(incident);
+			await _unitOfWork.SaveAsync();
+
+			return true;
+		}
+		catch (Exception e) 
+		{
+
+			Console.WriteLine(e.Message);
+			Console.WriteLine(e.StackTrace);
 			return false;
+		}
+	}
 
-		incident.Status = "Deleted";
-		await repository.UpdateAsync(incident);
-		await _unitOfWork.SaveAsync();
+	public async Task<bool> ChangeStatusRecord(string id, string status)
+	{
+		try
+		{
+			var repository = _unitOfWork.GetRepository<Incidentrecord>();
+			var incident = await repository.GetByIdAsync(id);
 
-		return true;
+			if (incident == null)
+				return false;
+
+			incident.Status = status;
+			await repository.UpdateAsync(incident);
+			await _unitOfWork.SaveAsync();
+
+			return true;
+		}
+		catch (Exception e)
+		{
+
+			Console.WriteLine(e.Message);
+			Console.WriteLine(e.StackTrace);
+			return false;
+		}
 	}
 }

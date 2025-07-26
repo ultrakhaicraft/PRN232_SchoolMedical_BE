@@ -1,4 +1,5 @@
-﻿using Org.BouncyCastle.Asn1.Ocsp;
+﻿using Microsoft.EntityFrameworkCore;
+using Org.BouncyCastle.Asn1.Ocsp;
 using SchoolMedical_BusinessLogic.Interface;
 using SchoolMedical_BusinessLogic.Utility;
 using SchoolMedical_DataAccess.DTOModels;
@@ -135,7 +136,7 @@ namespace SchoolMedical_BusinessLogic.Core
 			catch (Exception e)
 			{
 				Console.WriteLine("Error getting all student health record: " + e.Message);
-				throw new Exception("An error occurred while getting all the student health record.", e);
+				throw new Exception("An error occurred while getting all the student health record."+ e.Message);
 			}
 		}
 
@@ -143,9 +144,9 @@ namespace SchoolMedical_BusinessLogic.Core
 		{
 			try
 			{
-				await Task.Delay(100); 
-				var record = _unitOfWork.GetRepository<Studenthealthrecord>().GetById(recordId);
-
+				await Task.Delay(100);
+				var resultList = _unitOfWork.GetRepository<Studenthealthrecord>().Include(x => x.Student).Include(x => x.CreatedByNavigation);
+				var record = resultList.Where(x=>x.Id.Equals(recordId)).FirstOrDefault();
 				if (record == null)
 				{
 					throw new Exception("Student health record not found.");
@@ -156,13 +157,14 @@ namespace SchoolMedical_BusinessLogic.Core
 					Id = record.Id,
 					StudentId = record.StudentId,
 					StudentName = record.Student.FullName, // Assuming Student has a Name property
-					CreatedBy = record.CreatedByNavigation.FullName, // Assuming CreatedByNavigation has a Name property
+					CreatedBy = record.CreatedByNavigation.Id, // Assuming CreatedByNavigation has a Name property
 					Height = record.Height,
 					Allergies = record.Allergies,
 					ChronicDiseases = record.ChronicDiseases,
 					Vision = record.Vision,
 					Hearing = record.Hearing,
-					Status = record.Status,
+					Status = record.Status
+					/*
 					vaccineRecordViewModels = record.Vaccinerecords.Select(v => new VaccineRecordViewModel
 					{
 						Id = v.Id,
@@ -181,6 +183,7 @@ namespace SchoolMedical_BusinessLogic.Core
 						Treatment = t.Treatment,
 						Status = t.Status
 					}).ToList()
+					*/
 
 				};
 
@@ -191,7 +194,8 @@ namespace SchoolMedical_BusinessLogic.Core
 			catch (Exception e)
 			{
 				Console.WriteLine("Error creating student health record: " + e.Message);
-				throw new Exception("An error occurred while creating the student health record.", e);
+				Console.WriteLine(e.StackTrace);
+				return null;
 			}
 		}
 
@@ -200,7 +204,9 @@ namespace SchoolMedical_BusinessLogic.Core
 			try
 			{
 				await Task.Delay(100);
-				var record = _unitOfWork.GetRepository<Studenthealthrecord>().Find(x=>x.StudentId.Equals(studentId));
+				
+				var resultList = _unitOfWork.GetRepository<Studenthealthrecord>().Include(x => x.Student).Include(x => x.CreatedByNavigation);
+				var record = resultList.Where(x => x.StudentId.Equals(studentId)).FirstOrDefault();
 
 				if (record == null)
 				{
@@ -212,13 +218,14 @@ namespace SchoolMedical_BusinessLogic.Core
 					Id = record.Id,
 					StudentId = record.StudentId,
 					StudentName = record.Student.FullName, // Assuming Student has a Name property
-					CreatedBy = record.CreatedByNavigation.FullName, // Assuming CreatedByNavigation has a Name property
+					CreatedBy = record.CreatedByNavigation.Id, // Assuming CreatedByNavigation has a Name property
 					Height = record.Height,
 					Allergies = record.Allergies,
 					ChronicDiseases = record.ChronicDiseases,
 					Vision = record.Vision,
 					Hearing = record.Hearing,
-					Status = record.Status,
+					Status = record.Status
+					/*
 					vaccineRecordViewModels = record.Vaccinerecords.Select(v => new VaccineRecordViewModel
 					{
 						Id = v.Id,
@@ -237,6 +244,7 @@ namespace SchoolMedical_BusinessLogic.Core
 						Treatment = t.Treatment,
 						Status = t.Status
 					}).ToList()
+					*/
 
 				};
 
@@ -247,7 +255,7 @@ namespace SchoolMedical_BusinessLogic.Core
 			catch (Exception e)
 			{
 				Console.WriteLine("Error creating student health record: " + e.Message);
-				throw new Exception("An error occurred while creating the student health record.", e);
+				throw new Exception("An error occurred while getting the student health record.", e);
 			}
 		}
 

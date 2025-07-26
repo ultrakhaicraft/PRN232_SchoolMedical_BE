@@ -78,13 +78,12 @@ public class StudentHealthRecordCreateModel
 
 public class StudentHealthRecordUpdateModel
 {
-	public string Id { get; set; } = null!;
 
 	public string StudentId { get; set; } = null!;
 
 	public string StudentName { get; set; } = null!;
 
-	public string CreatedBy { get; set; } = null!;
+	public string CreatedBy { get; set; } = null!; // Parent ID
 
 	public int? Height { get; set; }
 

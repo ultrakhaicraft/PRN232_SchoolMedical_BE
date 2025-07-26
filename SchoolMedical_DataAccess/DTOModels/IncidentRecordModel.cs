@@ -15,7 +15,9 @@ namespace SchoolMedical_DataAccess.DTOModels;
 
         public string HandleBy { get; set; } = null!;
 
-        public string? IncidentType { get; set; }
+        public string HandleByName { get; set; } = null!; //Search HandleBy bang cach lay object Account trong IncidentRecord
+
+	    public string? IncidentType { get; set; }
 
         public string? Description { get; set; }
 
@@ -43,6 +45,7 @@ namespace SchoolMedical_DataAccess.DTOModels;
 
         public string HandleBy { get; set; } = null!;
 
+
         public string? IncidentType { get; set; }
 
         public string? Description { get; set; }
@@ -57,10 +60,10 @@ namespace SchoolMedical_DataAccess.DTOModels;
         public string Id { get; set; } = null!;
 
         public string StudentId { get; set; } = null!;
-	public string StudentName { get; set; } = null!; //Search StudentName bang cach lay object Student trong IncidentRecord
-	public string? IncidentType { get; set; } //Search Incident Type
-	public DateTime DateOccurred { get; set; } //Sort theo ascending date
-	public string? Status { get; set; }
+	    public string StudentName { get; set; } = null!; //Search StudentName bang cach lay object Student trong IncidentRecord
+	    public string? IncidentType { get; set; } //Search Incident Type
+	    public DateTime DateOccurred { get; set; } //Sort theo ascending date
+	    public string? Status { get; set; }
 }
 
        
