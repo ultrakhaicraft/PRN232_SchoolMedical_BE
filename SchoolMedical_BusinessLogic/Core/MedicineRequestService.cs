@@ -152,7 +152,8 @@ namespace SchoolMedical_BusinessLogic.Core
 					RequestBy = request.RequestBy,
 					ForStudent = request.ForStudent,
 					Description = request.Description,
-					DateSent = DateTime.Now
+					DateSent = DateTime.Now,
+					Status = "Pending"
 				};
 
 				await _medicineRequestRepository.InsertAsync(medicineRequest);
