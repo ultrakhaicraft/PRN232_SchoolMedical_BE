@@ -54,7 +54,9 @@ public enum EventStatus
 
 public enum IncidentStatus
 {
-
+	Active,
+	Inactive, //Soft Delete or cancel
+	CompletelyHealed
 }
 
 

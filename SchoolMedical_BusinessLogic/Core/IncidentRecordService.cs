@@ -48,6 +48,7 @@ public class IncidentRecordService : IIncidentRecordService
 			Id = incident.Id,
 			StudentId = incident.StudentId,
 			HandleBy = incident.HandleBy,
+			HandleByName = incident.HandleByNavigation.FullName,
 			IncidentType = incident.IncidentType,
 			Description = incident.Description,
 			DateOccurred = incident.DateOccurred,

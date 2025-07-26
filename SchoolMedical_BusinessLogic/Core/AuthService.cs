@@ -31,17 +31,19 @@ public class AuthService : IAuthService
 	}
 	public async Task<LoginResponse> Login(LoginRequest request)
 	{
-		var account = _unitOfWork.GetRepository<Account>().Find(user => user.Email == request.Email);
-		if (account == null)
+		try
 		{
-			throw new AppException(ErrorMessage.EmailNotFound);
-		}
-		if (!BCrypt.Net.BCrypt.Verify(request.Password, account.Password))
-		{
-			throw new AppException(ErrorMessage.PasswordIncorrect);
-		}
+			var account = _unitOfWork.GetRepository<Account>().Find(user => user.Email == request.Email);
+			if (account == null)
+			{
+				throw new AppException(ErrorMessage.EmailNotFound);
+			}
+			if (!BCrypt.Net.BCrypt.Verify(request.Password, account.Password))
+			{
+				throw new AppException(ErrorMessage.PasswordIncorrect);
+			}
 
-		var authClaims = new List<Claim>
+			var authClaims = new List<Claim>
 		{
 			new Claim("id", account.Id),
 			new Claim(ClaimTypes.Name, account.FullName?? "N/A"),
@@ -50,17 +52,24 @@ public class AuthService : IAuthService
 			new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
 		};
 
-		var token = _jwtUtils.GenerateToken(authClaims, _configuration.GetSection("JwtSettings").Get<JwtModel>(), account);
+			var token = _jwtUtils.GenerateToken(authClaims, _configuration.GetSection("JwtSettings").Get<JwtModel>(), account);
 
 
-		return new LoginResponse
+			return new LoginResponse
+			{
+				Token = token,
+				FullName = account.FullName,
+				Email = account.Email,
+				Id = account.Id.ToString(),
+				Role = account.Role
+			};
+		}
+		catch (Exception e)
 		{
-			Token = token,
-			FullName = account.FullName,
-			Email = account.Email,
-			Id=account.Id.ToString(),
-			Role = account.Role
-		};
+
+			Console.WriteLine(e.Message);
+			return null;
+		}
 	}
 	public async Task<string> RegisteAsync(RegisterRequest request, bool IsParent)
 	{
@@ -99,7 +108,7 @@ public class AuthService : IAuthService
 		catch (Exception e)
 		{
 			Console.WriteLine(e);
-			throw new AppException(e.Message);
+			return null;
 		}
 	}
 
